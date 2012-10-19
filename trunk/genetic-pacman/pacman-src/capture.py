@@ -828,4 +828,6 @@ if __name__ == '__main__':
   > python capture.py --help
   """
   options = readCommand(sys.argv[1:]) # Get game components based on input
-  runGames(**options)
+  for game in runGames(**options):
+    print game.state.data.score
+      
