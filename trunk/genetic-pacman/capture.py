@@ -809,11 +809,11 @@ def runGames(layout, agents, display, length, numGames, record, numTraining, red
     scores = [game.state.data.score for game in games]
     redWinRate = [s > 0 for s in scores].count(True) / float(len(scores))
     blueWinRate = [s < 0 for s in scores].count(True) / float(len(scores))
-    print 'Average Score:', sum(scores) / float(len(scores))
-    print 'Scores:       ', ', '.join([str(score) for score in scores])
-    print 'Red Win Rate:  %d/%d (%.2f)' % ([s > 0 for s in scores].count(True), len(scores), redWinRate)
-    print 'Blue Win Rate: %d/%d (%.2f)' % ([s < 0 for s in scores].count(True), len(scores), blueWinRate)
-    print 'Record:       ', ', '.join([('Blue', 'Tie', 'Red')[max(0, min(2, 1 + s))] for s in scores])
+    # print 'Average Score:', sum(scores) / float(len(scores))
+    # print 'Scores:       ', ', '.join([str(score) for score in scores])
+    # print 'Red Win Rate:  %d/%d (%.2f)' % ([s > 0 for s in scores].count(True), len(scores), redWinRate)
+    # print 'Blue Win Rate: %d/%d (%.2f)' % ([s < 0 for s in scores].count(True), len(scores), blueWinRate)
+    # print 'Record:       ', ', '.join([('Blue', 'Tie', 'Red')[max(0, min(2, 1 + s))] for s in scores])
   return games
 
 if __name__ == '__main__':

@@ -43,7 +43,8 @@ def run_main():
       # primitive values
       a = GAllele.GAlleleList(['a','b', 'xxx', 666, 0])
       setOfAlleles.add(a)
-      
+
+   print setOfAlleles      
    genome = G1DList.G1DList(20)
    genome.setParams(allele=setOfAlleles)
 
