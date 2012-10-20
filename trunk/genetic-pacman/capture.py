@@ -49,9 +49,9 @@ import keyboardAgents
 
 # If you change these, you won't affect the server, so you can't cheat
 KILL_POINTS = 10
-SONAR_NOISE_RANGE = 13 # Must be odd
+SONAR_NOISE_RANGE = 13  # Must be odd
 SONAR_NOISE_VALUES = [i - (SONAR_NOISE_RANGE - 1) / 2 for i in range(SONAR_NOISE_RANGE)]
-SIGHT_RANGE = 100000 # Manhattan distance
+SIGHT_RANGE = 100000  # Manhattan distance
 MIN_FOOD = 2
 
 SCARED_TIME = 40
@@ -224,7 +224,7 @@ class GameState:
     """
     Generates a new state by copying information from its predecessor.
     """
-    if prevState != None: # Initial state
+    if prevState != None:  # Initial state
       self.data = GameStateData(prevState.data)
       self.blueTeam = prevState.blueTeam
       self.redTeam = prevState.redTeam
@@ -333,7 +333,7 @@ def halfList(l, grid, red):
 # You shouldn't need to look through the code in this section of the file. #
 ############################################################################
 
-COLLISION_TOLERANCE = 0.7 # How close ghosts must be to Pacman to kill
+COLLISION_TOLERANCE = 0.7  # How close ghosts must be to Pacman to kill
 
 class CaptureRules:
   """
@@ -402,7 +402,7 @@ class CaptureRules:
     return 900  # Move limits should prevent this from ever happening
 
   def getMaxStartupTime(self, agentIndex):
-    return 15 # 15 seconds for registerInitialState
+    return 15  # 15 seconds for registerInitialState
 
   def getMoveWarningTime(self, agentIndex):
     return 1  # One second per move
@@ -509,7 +509,7 @@ class AgentRules:
         ghostPosition = otherAgentState.getPosition()
         if ghostPosition == None: continue
         if manhattanDistance(ghostPosition, agentState.getPosition()) <= COLLISION_TOLERANCE:
-          #award points to the other team for killing Pacmen
+          # award points to the other team for killing Pacmen
           if otherAgentState.scaredTimer <= 0:
             score = KILL_POINTS
             if state.isOnRedTeam(agentIndex):
@@ -526,14 +526,14 @@ class AgentRules:
             otherAgentState.isPacman = False
             otherAgentState.configuration = otherAgentState.start
             otherAgentState.scaredTimer = 0
-    else: # Agent is a ghost
+    else:  # Agent is a ghost
       for index in otherTeam:
         otherAgentState = state.data.agentStates[index]
         if not otherAgentState.isPacman: continue
         pacPos = otherAgentState.getPosition()
         if pacPos == None: continue
         if manhattanDistance(pacPos, agentState.getPosition()) <= COLLISION_TOLERANCE:
-          #award points to the other team for killing Pacmen
+          # award points to the other team for killing Pacmen
           if agentState.scaredTimer <= 0:
             score = KILL_POINTS
             if not state.isOnRedTeam(agentIndex):
@@ -637,7 +637,7 @@ def readCommand(argv):
   args = dict()
 
   # Choose a display format
-  #if options.pygame:
+  # if options.pygame:
   #   import pygameDisplay
   #    args['display'] = pygameDisplay.PacmanGraphics()
   if options.textgraphics:
@@ -683,7 +683,7 @@ def readCommand(argv):
   redAgents = loadAgents(True, options.red, nokeyboard, redArgs)
   print '\nBlue team %s with %s:' % (options.blue, blueArgs)
   blueAgents = loadAgents(False, options.blue, nokeyboard, blueArgs)
-  args['agents'] = sum([list(el) for el in zip(redAgents, blueAgents)], []) # list of agents
+  args['agents'] = sum([list(el) for el in zip(redAgents, blueAgents)], [])  # list of agents
 
   numKeyboardAgents = 0
   for index, val in enumerate([options.keys0, options.keys1, options.keys2, options.keys3]):
@@ -797,7 +797,7 @@ def runGames(layout, agents, display, length, numGames, record, numTraining, red
       components = {'layout': layout, 'agents': [game.Agent() for a in agents], 'actions': g.moveHistory, 'length': length, 'redTeamName': redTeamName, 'blueTeamName':blueTeamName }
       print "recorded"
       g.record = cPickle.dumps(components)
-      #with open('replay','wb') as f:
+      # with open('replay','wb') as f:
       #  f.write(g.record)
       try:
         f = open('replay', 'wb')
@@ -827,7 +827,7 @@ if __name__ == '__main__':
 
   > python capture.py --help
   """
-  options = readCommand(sys.argv[1:]) # Get game components based on input
+  options = readCommand(sys.argv[1:])  # Get game components based on input
   for game in runGames(**options):
     print game.state.data.score
       
