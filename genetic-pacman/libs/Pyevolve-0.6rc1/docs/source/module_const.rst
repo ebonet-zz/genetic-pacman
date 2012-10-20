@@ -1,4 +1,0 @@
-
-.. automodule:: Consts
-   :members:
-
