@@ -4,13 +4,11 @@ Created on Oct 20, 2012
 @author: BONET
 '''
 
-from pyevolve import Crossovers, Initializators
-from pyevolve import G1DList
 from pyevolve import GSimpleGA
-from pyevolve import Mutators
 from capture import runGames
 from capture import readCommand
 from pyevolve import Selectors
+from pyevolve import G1PacmanList
 
 def eval_func(chromosome):
     # arguments for the pacman game
@@ -29,24 +27,13 @@ def eval_func(chromosome):
 def train():
     
     n_generatios = 500;
-    n_genes = 14;
-    rage_max = 1;
-    rage_min = -1;
-    
     
     # Creates the genome
-    genome = G1DList.G1DList(n_genes)
-    
-    # Sets the range max and min of the 1D List
-    genome.setParams(rangemin=rage_min,rangemax=rage_max)
+    genome = G1PacmanList.G1PacmanList()
     
     # The evaluator function
     genome.evaluator.set(eval_func);
-    
-    # The mutator
-    genome.mutator.set(Mutators.G1DListMutatorRealGaussian);
-    
-    
+
     # Genetic Algorithm Instance
     ga =  GSimpleGA.GSimpleGA(genome);
     
@@ -58,4 +45,5 @@ def train():
     
     ga.evolve(freq_stats=100);  
   
-  
+if __name__ == "__main__":
+    train()  
