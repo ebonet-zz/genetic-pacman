@@ -769,7 +769,7 @@ def replayGame(layout, agents, actions, display, length, redTeamName, blueTeamNa
 
     display.finish()
 
-def runGames(layout, agents, display, length, numGames, record, numTraining, redTeamName, blueTeamName, muteAgents=False, catchExceptions=False):
+def runGames(layout, agents, display, length, numGames, record, numTraining, redTeamName, blueTeamName, muteAgents=False, catchExceptions=False, chromosome = []):
 
   rules = CaptureRules()
   games = []
@@ -787,6 +787,11 @@ def runGames(layout, agents, display, length, numGames, record, numTraining, red
     else:
         gameDisplay = display
         rules.quiet = False
+    
+    for agent in agents:
+        if "setChromosome" in dir(agent):
+            agent.setChromosome(chromosome)
+            
     g = rules.newGame(layout, agents, gameDisplay, length, muteAgents, catchExceptions)
     g.run()
     if not beQuiet: games.append(g)

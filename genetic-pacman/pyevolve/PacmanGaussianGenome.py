@@ -63,7 +63,7 @@ def PacmanGaussianInitializator(genome, **args):
     minMean = genome.getParam("minMean")
     maxMean = genome.getParam("maxMean")
     result = []
-    for i in range(0, listSize/2):
+    for i in range(0, listSize):
         if i%2 == 0:
             result.append(rand_uniform(minMean, maxMean))
         else:
