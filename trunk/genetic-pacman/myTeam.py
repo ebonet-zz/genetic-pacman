@@ -147,6 +147,10 @@ class MyAgent(CaptureAgent):
             return Directions.STOP
     
         maxValue = max(actionPoints)
+
+        for i in range(len(possibleCells)):
+            self.debugDraw(possibleCells[i], [actionPoints[i] / 60, 0, 0], False) 
+        
         bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
 
         return random.choice(bestActions)
