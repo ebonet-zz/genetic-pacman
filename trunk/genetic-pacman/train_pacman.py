@@ -4,7 +4,7 @@ Created on Oct 20, 2012
 @author: BONET
 '''
 
-from pyevolve import GSimpleGA
+from pyevolve import GSimpleGA, PacmanGaussianGenome
 from capture import runGames
 from capture import readCommand
 from pyevolve import Selectors
@@ -28,7 +28,7 @@ def train():
     n_generatios = 500;
     
     # Creates the genome
-    genome = G1PacmanList.G1PacmanList()
+    genome = PacmanGaussianGenome
     
     # The evaluator function
     genome.evaluator.set(eval_func);
