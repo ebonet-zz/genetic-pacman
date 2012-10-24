@@ -130,15 +130,18 @@ class MyAgent(CaptureAgent):
         previousPos = gameState.getAgentState(self.index).getPosition()
 
         foodList = self.getFood(gameState).asList()
+        foodGrid = self.getFood(gameState)
         capsules = self.getCapsules(gameState)
       
         allies = [gameState.getAgentState(i) for i in self.getTeam(gameState)]
-      
+        hunters = [a for a in allies if a.isPacman and a.getPosition() != None]
+        defenders = [a for a in allies if not a.isPacman and a.getPosition() != None]
+        
         enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
         invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
         ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
       
-        evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, capsules, enemies, invaders, ghosts, allies))
+        evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, foodGrid, capsules, hunters, defenders, invaders, ghosts))
     
         possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
         actionPoints = [evalFunc(cell) for cell in possibleCells]
@@ -148,8 +151,8 @@ class MyAgent(CaptureAgent):
     
         maxValue = max(actionPoints)
 
-        for i in range(len(possibleCells)):
-            self.debugDraw(possibleCells[i], [actionPoints[i] / 60, 0, 0], False) 
+#        for i in range(len(possibleCells)):
+#            self.debugDraw(possibleCells[i], [actionPoints[i] / 60, 0, 0] if actionPoints[i] > 0 else [0, -actionPoints[i] / 250, 0], False) 
         
         bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
 
@@ -159,16 +162,42 @@ class MyAgent(CaptureAgent):
         dx, dy = Actions.directionToVector(action)
         return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
 
-    def generateGaussians(self, foodList, capsules, enemies, invaders, ghosts, allies):
+    def generateGaussians(self, foodList, foodGrid, capsules, hunters, defenders, invaders, ghosts):
         # def cellEvaluation(coordinates):
         #    return coordinates[0] + coordinates[1]
       
-        chromoawesome = [20.0, 1.0]
+        chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3]
         gaussians = []
       
         for food in foodList:
             gaussians.append(self.gaussian(chromoawesome[0], chromoawesome[1], food[0], food[1]))
+            
+            isLonely = True
+            for i in [-1, 0, 1]:
+                for j in [-1, 0, 1]:
+                    isCellInGrid = (food[0] + i < foodGrid.width) and (food[0] + i >= 0) and (food[1] + j < foodGrid.height) and (food[1] + j) >= 0
+                    if (i != 0 or j != 0) and isCellInGrid and foodGrid[food[0] + i][food[1] + j]:
+                        isLonely = False
+                        break
+            
+            if isLonely:
+                gaussians.append(self.gaussian(chromoawesome[10], chromoawesome[11], food[0], food[1]))                            
+            
+        for capsule in capsules:
+            gaussians.append(self.gaussian(chromoawesome[8], chromoawesome[9], capsule[0], capsule[1]))
       
+        for ghost in ghosts:
+            if ghost.scaredTimer == 0:
+                gaussians.append(self.gaussian(chromoawesome[2], chromoawesome[3], ghost.getPosition()[0], ghost.getPosition()[1]))
+            else:
+                gaussians.append(self.gaussian(chromoawesome[4], chromoawesome[5], ghost.getPosition()[0], ghost.getPosition()[1]))
+                
+        for hunter in hunters:
+            gaussians.append(self.gaussian(chromoawesome[6], chromoawesome[7], hunter.getPosition()[0], hunter.getPosition()[1]))
+              
+        
+        
+        
         return gaussians
 
     def generateEvalFunc(self, gaussians):
