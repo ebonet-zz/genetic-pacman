@@ -8,15 +8,16 @@
 
 from captureAgents import CaptureAgent
 import random, time, util
-from game import Directions
+from game import Directions, Grid, Actions
 import game
+from sys import maxint
 
 #################
 # Team creation #
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'DummyAgent', second = 'DummyAgent'):
+               first='MyAgent', second='MyAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -38,7 +39,21 @@ def createTeam(firstIndex, secondIndex, isRed,
 ##########
 # Agents #
 ##########
-
+class gameGrid:
+    def __init__(self, grid):
+        self.grid = grid.copy()
+        self.height = grid.height
+        self.width = grid.width
+        
+    def setPoints(self, coordinateTuple, points):
+        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
+            self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] = points
+        
+    def getPoints(self, coordinateTuple):
+        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
+            return self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])]
+        return -maxint    
+    
 class DummyAgent(CaptureAgent):
   """
   A Dummy agent to serve as an example of the necessary agent structure.
@@ -88,58 +103,90 @@ class DummyAgent(CaptureAgent):
 #           My Team              #
 ##################################
 
-
 class MyAgent(CaptureAgent):
+  """
+  A Dummy agent to serve as an example of the necessary agent structure.
+  You should look at baselineTeam.py for more details about how to
+  create an agent as this is the bare minimum.
+  """
+
+  def registerInitialState(self, gameState):
+    """
+    This method handles the initial setup of the
+    agent to populate useful fields (such as what team
+    we're on). 
     
-    def registerInitialState(self, gameState):
-        CaptureAgent.registerInitialState(self, gameState)
-        
-        
-    def chooseAction(self, gameState):
-        
-        scores = []
-        
-        for action in gameState.getLegalActions():
-            
-            successorState = gameState.generateSuccessor(agentIndex=0,action)
-            scores = scores +[action,self.getStateScore(self,successorState)]
-            
+    A distanceCalculator instance caches the maze distances
+    between each pair of positions, so your agents can use:
+    self.distancer.getDistance(p1, p2)
+
+    IMPORTANT: This method may run for at most 15 seconds.
+    """
+
+    ''' 
+    Make sure you do not delete the following line. If you would like to
+    use Manhattan distances instead of maze distances in order to save
+    on initialization time, please take a look at
+    CaptureAgent.registerInitialState in captureAgents.py. 
+    '''
+    CaptureAgent.registerInitialState(self, gameState)
+
+    ''' 
+    Your initialization code goes here, if you need any.
+    '''
+    self.grid = gameGrid(gameState.getWalls())
+
+  def chooseAction(self, gameState):
+      
+    actions = gameState.getLegalActions(self.index)
+    
+    previousPos = gameState.getAgentState(self.index).getPosition()
+
+    self.updateGrid(gameState)
+    
+    possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
+    
+    actionPoints = [self.grid.getPoints(cell) for cell in possibleCells]
+    
+    if not actionPoints:
+        return Directions.STOP
+    
+    maxValue = max(actionPoints)
+    bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
+
+    return random.choice(bestActions)
+    
+  def updateGrid(self, gameState):
+      for y in range(self.grid.height):
+          for x in range(self.grid.width):
+              self.grid.setPoints((x, y), x + y)
+      
+  def getActionCoordinates(self, action, previousCoordinates):
+      dx, dy = Actions.directionToVector(action)
+      return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
         
     
-        #CaptureAgent.chooseAction(self, gameState)
-        
-        return 0;
-    
-    def isPacman(self):
-        
-        # TODO: Implement get agent type
-        return 'true';
-        
-    
-def getStateScore(captureAgent,selfgameState, importances):
-    
+def getStateScore(captureAgent, selfgameState, importances):
     
     finalScore = 0;
 
     if captureAgent.isPacman():
-        finalScore += importances[0]*getScoreForDistanceToClosesGhost();
-        finalScore += importances[1]*getScoreForFoodProximity();
-        finalScore += importances[2]*getScoreForNotLeavingIsolatedFood();
-        finalScore += importances[3]*getScoreForProximityToCapsule();
-        finalScore += importances[4]*getScoreForProximityToAlliedPacman();
-        finalScore += importances[5]*getScoreForChangeToDefense();
-        finalScore += importances[6]*getScoreForSearchRegion();
+        finalScore += importances[0] * getScoreForDistanceToClosesGhost();
+        finalScore += importances[1] * getScoreForFoodProximity();
+        finalScore += importances[2] * getScoreForNotLeavingIsolatedFood();
+        finalScore += importances[3] * getScoreForProximityToCapsule();
+        finalScore += importances[4] * getScoreForProximityToAlliedPacman();
+        finalScore += importances[5] * getScoreForChangeToDefense();
+        finalScore += importances[6] * getScoreForSearchRegion();
         
     else:
-        finalScore += importances[7]*getScoreForDefenseAreaSize();
-        finalScore += importances[8]*getScoreForPatrolling();
-        finalScore += importances[9]*getScoreForWalkOverFood();
-        finalScore += importances[10]*getScoreForChasing();
-        finalScore += importances[11]*getScoreForProtectingPaths();
-        finalScore += importances[12]*getScoreForProtectingCapsules();
-        finalScore += importances[13]*getScoreForProximityToAlliedGhost();
-        
-        
+        finalScore += importances[7] * getScoreForDefenseAreaSize();
+        finalScore += importances[8] * getScoreForPatrolling();
+        finalScore += importances[9] * getScoreForWalkOverFood();
+        finalScore += importances[10] * getScoreForChasing();
+        finalScore += importances[11] * getScoreForProtectingPaths();
+        finalScore += importances[12] * getScoreForProtectingCapsules();
+        finalScore += importances[13] * getScoreForProximityToAlliedGhost();
         
     return finalScore;
 
