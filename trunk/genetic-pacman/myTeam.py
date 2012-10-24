@@ -11,6 +11,7 @@ import random, time, util
 from game import Directions, Grid, Actions
 import game
 from sys import maxint
+from math import exp
 
 #################
 # Team creation #
@@ -157,3 +158,18 @@ class MyAgent(CaptureAgent):
       def cellEvaluation(coordinates):
           return coordinates[0] + coordinates[1]
       return cellEvaluation
+
+
+def sq(x):
+    return x * x
+
+def sumGaussians(x,y,gaussians):
+    return sum([(gaussian2(x, y, gauss)) for gauss in gaussians])    
+
+def gaussian2(x, y, g):
+    return gaussian(x, y, g[0], g[1], g[2], g[3])
+
+def gaussian(x, y, A, sigma, x0, y0):
+    return A * exp(-(sq(x - x0) + sq(y - y0)) / (2.0 * sq(sigma)))
+
+

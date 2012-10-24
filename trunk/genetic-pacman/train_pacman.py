@@ -8,7 +8,6 @@ from pyevolve import GSimpleGA
 from capture import runGames
 from capture import readCommand
 from pyevolve import Selectors
-from pyevolve import G1PacmanList
 
 def eval_func(chromosome):
     # arguments for the pacman game
