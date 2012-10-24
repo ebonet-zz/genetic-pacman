@@ -125,6 +125,7 @@ class MyAgent(CaptureAgent):
   def chooseAction(self, gameState):
       
     actions = gameState.getLegalActions(self.index)
+    # actions = [a for a in actions if a != Directions.STOP]
     
     previousPos = gameState.getAgentState(self.index).getPosition()
 
@@ -137,7 +138,7 @@ class MyAgent(CaptureAgent):
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
     ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
       
-    evalFunc = self.generateGaussianSum(foodList, capsules, enemies, invaders, ghosts, allies)
+    evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, capsules, enemies, invaders, ghosts, allies))
     
     possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
     actionPoints = [evalFunc(cell) for cell in possibleCells]
@@ -154,22 +155,34 @@ class MyAgent(CaptureAgent):
       dx, dy = Actions.directionToVector(action)
       return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
 
-  def generateGaussianSum(self, foodList, capsules, enemies, invaders, ghosts, allies):
-      def cellEvaluation(coordinates):
-          return coordinates[0] + coordinates[1]
-      return cellEvaluation
+  def generateGaussians(self, foodList, capsules, enemies, invaders, ghosts, allies):
+      # def cellEvaluation(coordinates):
+      #    return coordinates[0] + coordinates[1]
+      
+      chromoawesome = [25, 2]
+      gaussians = []
+      
+      for food in foodList:
+          gaussians.append(self.gaussian(chromoawesome[0], chromoawesome[1], food[0], food[1]))
+      
+      return gaussians
 
+  def generateEvalFunc(self, gaussians):
+      def eval(coordinate):
+          return sumGaussians(coordinate[0], coordinate[1], gaussians)
+      return eval;
+      
+  def gaussian(self, A, sigma, x0, y0):
+    def gaussianFunc(x, y):
+        distance = self.getMazeDistance((x, y), (x0, y0))
+        return A * exp(-(distance) / (2.0 * sq(sigma)))
+    return gaussianFunc
 
 def sq(x):
     return x * x
 
-def sumGaussians(x,y,gaussians):
-    return sum([(gaussian2(x, y, gauss)) for gauss in gaussians])    
+def gaussianValueAt(x, y, g):
+    return g(x, y)
 
-def gaussian2(x, y, g):
-    return gaussian(x, y, g[0], g[1], g[2], g[3])
-
-def gaussian(x, y, A, sigma, x0, y0):
-    return A * exp(-(sq(x - x0) + sq(y - y0)) / (2.0 * sq(sigma)))
-
-
+def sumGaussians(x, y, gaussians):
+    return sum([gaussianValueAt(x, y, gauss) for gauss in gaussians])    
