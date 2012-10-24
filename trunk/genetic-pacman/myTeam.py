@@ -39,20 +39,6 @@ def createTeam(firstIndex, secondIndex, isRed,
 ##########
 # Agents #
 ##########
-class gameGrid:
-    def __init__(self, grid):
-        self.grid = grid.copy()
-        self.height = grid.height
-        self.width = grid.width
-        
-    def setPoints(self, coordinateTuple, points):
-        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
-            self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] = points
-        
-    def getPoints(self, coordinateTuple):
-        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
-            return self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])]
-        return -maxint    
     
 class DummyAgent(CaptureAgent):
   """
@@ -103,6 +89,21 @@ class DummyAgent(CaptureAgent):
 #           My Team              #
 ##################################
 
+class gameGrid:
+    def __init__(self, grid):
+        self.grid = grid.copy()
+        self.height = grid.height
+        self.width = grid.width
+        
+    def setPoints(self, coordinateTuple, points):
+        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
+            self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] = points
+        
+    def getPoints(self, coordinateTuple):
+        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
+            return self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])]
+        return -maxint    
+    
 class MyAgent(CaptureAgent):
   """
   A Dummy agent to serve as an example of the necessary agent structure.
