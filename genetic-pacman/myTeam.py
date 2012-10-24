@@ -91,92 +91,92 @@ class DummyAgent(CaptureAgent):
 ##################################
     
 class MyAgent(CaptureAgent):
-  """
-  A Dummy agent to serve as an example of the necessary agent structure.
-  You should look at baselineTeam.py for more details about how to
-  create an agent as this is the bare minimum.
-  """
-
-  def registerInitialState(self, gameState):
     """
-    This method handles the initial setup of the
-    agent to populate useful fields (such as what team
-    we're on). 
-    
-    A distanceCalculator instance caches the maze distances
-    between each pair of positions, so your agents can use:
-    self.distancer.getDistance(p1, p2)
-
-    IMPORTANT: This method may run for at most 15 seconds.
+    A Dummy agent to serve as an example of the necessary agent structure.
+    You should look at baselineTeam.py for more details about how to
+    create an agent as this is the bare minimum.
     """
 
-    ''' 
-    Make sure you do not delete the following line. If you would like to
-    use Manhattan distances instead of maze distances in order to save
-    on initialization time, please take a look at
-    CaptureAgent.registerInitialState in captureAgents.py. 
-    '''
-    CaptureAgent.registerInitialState(self, gameState)
-
-    ''' 
-    Your initialization code goes here, if you need any.
-    '''
-
-  def chooseAction(self, gameState):
-      
-    actions = gameState.getLegalActions(self.index)
-    # actions = [a for a in actions if a != Directions.STOP]
+    def registerInitialState(self, gameState):
+        """
+        This method handles the initial setup of the
+        agent to populate useful fields (such as what team
+        we're on). 
     
-    previousPos = gameState.getAgentState(self.index).getPosition()
+        A distanceCalculator instance caches the maze distances
+        between each pair of positions, so your agents can use:
+        self.distancer.getDistance(p1, p2)
 
-    foodList = self.getFood(gameState).asList()
-    capsules = self.getCapsules(gameState)
-      
-    allies = [gameState.getAgentState(i) for i in self.getTeam(gameState)]
-      
-    enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
-    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
-    ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
-      
-    evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, capsules, enemies, invaders, ghosts, allies))
-    
-    possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
-    actionPoints = [evalFunc(cell) for cell in possibleCells]
-    
-    if not actionPoints:
-        return Directions.STOP
-    
-    maxValue = max(actionPoints)
-    bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
+        IMPORTANT: This method may run for at most 15 seconds.
+        """
 
-    return random.choice(bestActions)
+        ''' 
+        Make sure you do not delete the following line. If you would like to
+        use Manhattan distances instead of maze distances in order to save
+        on initialization time, please take a look at
+        CaptureAgent.registerInitialState in captureAgents.py. 
+        '''
+        CaptureAgent.registerInitialState(self, gameState)
+
+        ''' 
+        Your initialization code goes here, if you need any.
+        '''
+
+    def chooseAction(self, gameState):
+      
+        actions = gameState.getLegalActions(self.index)
+        # actions = [a for a in actions if a != Directions.STOP]
     
-  def getActionCoordinates(self, action, previousCoordinates):
-      dx, dy = Actions.directionToVector(action)
-      return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
+        previousPos = gameState.getAgentState(self.index).getPosition()
 
-  def generateGaussians(self, foodList, capsules, enemies, invaders, ghosts, allies):
-      # def cellEvaluation(coordinates):
-      #    return coordinates[0] + coordinates[1]
+        foodList = self.getFood(gameState).asList()
+        capsules = self.getCapsules(gameState)
       
-      chromoawesome = [25, 2]
-      gaussians = []
+        allies = [gameState.getAgentState(i) for i in self.getTeam(gameState)]
       
-      for food in foodList:
-          gaussians.append(self.gaussian(chromoawesome[0], chromoawesome[1], food[0], food[1]))
+        enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
+        invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+        ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
       
-      return gaussians
+        evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, capsules, enemies, invaders, ghosts, allies))
+    
+        possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
+        actionPoints = [evalFunc(cell) for cell in possibleCells]
+        
+        if not actionPoints:
+            return Directions.STOP
+    
+        maxValue = max(actionPoints)
+        bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
 
-  def generateEvalFunc(self, gaussians):
-      def eval(coordinate):
-          return sumGaussians(coordinate[0], coordinate[1], gaussians)
-      return eval;
+        return random.choice(bestActions)
+    
+    def getActionCoordinates(self, action, previousCoordinates):
+        dx, dy = Actions.directionToVector(action)
+        return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
+
+    def generateGaussians(self, foodList, capsules, enemies, invaders, ghosts, allies):
+        # def cellEvaluation(coordinates):
+        #    return coordinates[0] + coordinates[1]
       
-  def gaussian(self, A, sigma, x0, y0):
-    def gaussianFunc(x, y):
-        distance = self.getMazeDistance((x, y), (x0, y0))
-        return A * exp(-(distance) / (2.0 * sq(sigma)))
-    return gaussianFunc
+        chromoawesome = [20.0, 1.0]
+        gaussians = []
+      
+        for food in foodList:
+            gaussians.append(self.gaussian(chromoawesome[0], chromoawesome[1], food[0], food[1]))
+      
+        return gaussians
+
+    def generateEvalFunc(self, gaussians):
+        def evalC(coordinate):
+            return sumGaussians(coordinate[0], coordinate[1], gaussians)
+        return evalC;
+      
+    def gaussian(self, A, sigma, x0, y0):
+        def gaussianFunc(x, y):
+            distance = self.getMazeDistance((x, y), (x0, y0))
+            return A * exp(-(distance) / (2.0 * sq(sigma)))
+        return gaussianFunc
 
 def sq(x):
     return x * x
