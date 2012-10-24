@@ -84,3 +84,105 @@ class DummyAgent(CaptureAgent):
 
     return random.choice(actions)
 
+##################################
+#           My Team              #
+##################################
+
+
+class MyAgent(CaptureAgent):
+    
+    def registerInitialState(self, gameState):
+        CaptureAgent.registerInitialState(self, gameState)
+        
+        
+    def chooseAction(self, gameState):
+        
+        scores = []
+        
+        for action in gameState.getLegalActions():
+            
+            successorState = gameState.generateSuccessor(agentIndex=0,action)
+            scores = scores +[action,self.getStateScore(self,successorState)]
+            
+        
+    
+        #CaptureAgent.chooseAction(self, gameState)
+        
+        return 0;
+    
+    def isPacman(self):
+        
+        # TODO: Implement get agent type
+        return 'true';
+        
+    
+def getStateScore(captureAgent,selfgameState, importances):
+    
+    
+    finalScore = 0;
+
+    if captureAgent.isPacman():
+        finalScore += importances[0]*getScoreForDistanceToClosesGhost();
+        finalScore += importances[1]*getScoreForFoodProximity();
+        finalScore += importances[2]*getScoreForNotLeavingIsolatedFood();
+        finalScore += importances[3]*getScoreForProximityToCapsule();
+        finalScore += importances[4]*getScoreForProximityToAlliedPacman();
+        finalScore += importances[5]*getScoreForChangeToDefense();
+        finalScore += importances[6]*getScoreForSearchRegion();
+        
+    else:
+        finalScore += importances[7]*getScoreForDefenseAreaSize();
+        finalScore += importances[8]*getScoreForPatrolling();
+        finalScore += importances[9]*getScoreForWalkOverFood();
+        finalScore += importances[10]*getScoreForChasing();
+        finalScore += importances[11]*getScoreForProtectingPaths();
+        finalScore += importances[12]*getScoreForProtectingCapsules();
+        finalScore += importances[13]*getScoreForProximityToAlliedGhost();
+        
+        
+        
+    return finalScore;
+
+def getScoreForDistanceToClosesGhost():
+    return 0;
+
+def getScoreForFoodProximity():
+    return 0;
+    
+def getScoreForNotLeavingIsolatedFood():
+    return 0;
+
+def getScoreForProximityToCapsule():
+    return 0;
+
+def getScoreForProximityToAlliedPacman():
+    return 0;
+
+def getScoreForChangeToDefense():
+    return 0;
+
+def getScoreForSearchRegion():
+    return 0;
+
+def getScoreForDefenseAreaSize():
+    return 0;
+
+def getScoreForPatrolling():
+    return 0;
+
+def getScoreForWalkOverFood():
+    return 0;
+
+def getScoreForChasing():
+    return 0;
+
+def getScoreForProtectingPaths():
+    return 0;
+
+def getScoreForProximityToAlliedGhost():
+    return 0;
+
+def getScoreForProtectingCapsules():
+    return 0;
+    
+    
