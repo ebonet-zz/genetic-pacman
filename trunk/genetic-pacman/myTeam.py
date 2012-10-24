@@ -88,21 +88,6 @@ class DummyAgent(CaptureAgent):
 ##################################
 #           My Team              #
 ##################################
-
-class gameGrid:
-    def __init__(self, grid):
-        self.grid = grid.copy()
-        self.height = grid.height
-        self.width = grid.width
-        
-    def setPoints(self, coordinateTuple, points):
-        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
-            self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] = points
-        
-    def getPoints(self, coordinateTuple):
-        if self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])] != True:
-            return self.grid[int(coordinateTuple[0])][int(coordinateTuple[1])]
-        return -maxint    
     
 class MyAgent(CaptureAgent):
   """
@@ -135,7 +120,6 @@ class MyAgent(CaptureAgent):
     ''' 
     Your initialization code goes here, if you need any.
     '''
-    self.grid = gameGrid(gameState.getWalls())
 
   def chooseAction(self, gameState):
       
@@ -143,11 +127,19 @@ class MyAgent(CaptureAgent):
     
     previousPos = gameState.getAgentState(self.index).getPosition()
 
-    self.updateGrid(gameState)
+    foodList = self.getFood(gameState).asList()
+    capsules = self.getCapsules(gameState)
+      
+    allies = [gameState.getAgentState(i) for i in self.getTeam(gameState)]
+      
+    enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
+    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+    ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
+      
+    evalFunc = self.generateGaussianSum(foodList, capsules, enemies, invaders, ghosts, allies)
     
     possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
-    
-    actionPoints = [self.grid.getPoints(cell) for cell in possibleCells]
+    actionPoints = [evalFunc(cell) for cell in possibleCells]
     
     if not actionPoints:
         return Directions.STOP
@@ -157,80 +149,11 @@ class MyAgent(CaptureAgent):
 
     return random.choice(bestActions)
     
-  def updateGrid(self, gameState):
-      for y in range(self.grid.height):
-          for x in range(self.grid.width):
-              self.grid.setPoints((x, y), x + y)
-      
   def getActionCoordinates(self, action, previousCoordinates):
       dx, dy = Actions.directionToVector(action)
       return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
-        
-    
-def getStateScore(captureAgent, selfgameState, importances):
-    
-    finalScore = 0;
 
-    if captureAgent.isPacman():
-        finalScore += importances[0] * getScoreForDistanceToClosesGhost();
-        finalScore += importances[1] * getScoreForFoodProximity();
-        finalScore += importances[2] * getScoreForNotLeavingIsolatedFood();
-        finalScore += importances[3] * getScoreForProximityToCapsule();
-        finalScore += importances[4] * getScoreForProximityToAlliedPacman();
-        finalScore += importances[5] * getScoreForChangeToDefense();
-        finalScore += importances[6] * getScoreForSearchRegion();
-        
-    else:
-        finalScore += importances[7] * getScoreForDefenseAreaSize();
-        finalScore += importances[8] * getScoreForPatrolling();
-        finalScore += importances[9] * getScoreForWalkOverFood();
-        finalScore += importances[10] * getScoreForChasing();
-        finalScore += importances[11] * getScoreForProtectingPaths();
-        finalScore += importances[12] * getScoreForProtectingCapsules();
-        finalScore += importances[13] * getScoreForProximityToAlliedGhost();
-        
-    return finalScore;
-
-def getScoreForDistanceToClosesGhost():
-    return 0;
-
-def getScoreForFoodProximity():
-    return 0;
-    
-def getScoreForNotLeavingIsolatedFood():
-    return 0;
-
-def getScoreForProximityToCapsule():
-    return 0;
-
-def getScoreForProximityToAlliedPacman():
-    return 0;
-
-def getScoreForChangeToDefense():
-    return 0;
-
-def getScoreForSearchRegion():
-    return 0;
-
-def getScoreForDefenseAreaSize():
-    return 0;
-
-def getScoreForPatrolling():
-    return 0;
-
-def getScoreForWalkOverFood():
-    return 0;
-
-def getScoreForChasing():
-    return 0;
-
-def getScoreForProtectingPaths():
-    return 0;
-
-def getScoreForProximityToAlliedGhost():
-    return 0;
-
-def getScoreForProtectingCapsules():
-    return 0;
-    
-    
+  def generateGaussianSum(self, foodList, capsules, enemies, invaders, ghosts, allies):
+      def cellEvaluation(coordinates):
+          return coordinates[0] + coordinates[1]
+      return cellEvaluation
