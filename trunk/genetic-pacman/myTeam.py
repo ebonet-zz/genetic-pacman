@@ -18,7 +18,7 @@ from math import exp
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first='AttackAgent', second='DoubleAgent'):
+               first='AttackAgent', second='AttackAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -164,11 +164,11 @@ class AttackAgent(CaptureAgent):
         # def cellEvaluation(coordinates):
         #    return coordinates[0] + coordinates[1]
       
-        chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3]
+        # chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3]
         gaussians = []
       
         for food in foodList:
-            gaussians.append(self.gaussian(chromoawesome[0], chromoawesome[1], food[0], food[1]))
+            gaussians.append(self.gaussian(self.chromoawesome[0], self.chromoawesome[1], food[0], food[1]))
             
             isLonely = True
             for i in [-1, 0, 1]:
@@ -179,19 +179,19 @@ class AttackAgent(CaptureAgent):
                         break
             
             if isLonely:
-                gaussians.append(self.gaussian(chromoawesome[10], chromoawesome[11], food[0], food[1]))                            
+                gaussians.append(self.gaussian(self.chromoawesome[10], self.chromoawesome[11], food[0], food[1]))                            
             
         for capsule in capsules:
-            gaussians.append(self.gaussian(chromoawesome[8], chromoawesome[9], capsule[0], capsule[1]))
+            gaussians.append(self.gaussian(self.chromoawesome[8], self.chromoawesome[9], capsule[0], capsule[1]))
       
         for ghost in ghosts:
             if ghost.scaredTimer == 0:
-                gaussians.append(self.gaussian(chromoawesome[2], chromoawesome[3], ghost.getPosition()[0], ghost.getPosition()[1]))
+                gaussians.append(self.gaussian(self.chromoawesome[2], self.chromoawesome[3], ghost.getPosition()[0], ghost.getPosition()[1]))
             else:
-                gaussians.append(self.gaussian(chromoawesome[4], chromoawesome[5], ghost.getPosition()[0], ghost.getPosition()[1]))
+                gaussians.append(self.gaussian(self.chromoawesome[4], self.chromoawesome[5], ghost.getPosition()[0], ghost.getPosition()[1]))
                 
         for hunter in hunters:
-            gaussians.append(self.gaussian(chromoawesome[6], chromoawesome[7], hunter.getPosition()[0], hunter.getPosition()[1]))
+            gaussians.append(self.gaussian(self.chromoawesome[6], self.chromoawesome[7], hunter.getPosition()[0], hunter.getPosition()[1]))
               
         return gaussians
 
@@ -206,6 +206,9 @@ class AttackAgent(CaptureAgent):
             return A * exp(-(distance) / (2.0 * sq(sigma)))
         return gaussianFunc
     
+    def setChromosome(self, chromosome):
+        self.chromoawesome = chromosome
+        
 class DoubleAgent(CaptureAgent):
 
     def registerInitialState(self, gameState):
@@ -318,6 +321,9 @@ class DoubleAgent(CaptureAgent):
             distance = self.getMazeDistance((x, y), (x0, y0))
             return A * exp(-(distance) / (2.0 * sq(sigma)))
         return gaussianFunc
+    
+    def setChromosome(self, chromosome):
+        self.chromoawesome = chromosome
 
 def sq(x):
     return x * x

@@ -11,9 +11,9 @@ from pyevolve import Selectors
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam","-b","baselineTeam","-q","-n","5"]
+    argv = ["-r", "myTeam","-b","baselineTeam","-n","5"]
     options = readCommand(argv)  # Get game components based on input
-    
+    options["chromosome"] = chromosome.genomeList
     games = runGames(**options)    
 
     scores = [game.state.data.score for game in games];
