@@ -29,7 +29,7 @@ class PacmanGaussiansList(G1DList):
     One-Dimensional List that represents the chromosomes for the Pacman game
     '''
 
-    def __init__(self):
+    def __init__(self, initialList = []):
         '''
         Constructor
         '''
@@ -38,6 +38,8 @@ class PacmanGaussiansList(G1DList):
         self.initializator.set(PacmanGaussianInitializator)
         self.mutator.set(PacmanGaussianMutator)
         self.crossover.set(G1DListCrossoverUniform)
+        if initialList:
+            self.genomeList = initialList
     
     def getGaussianAllele(self, gaussianName):
         '''
@@ -47,7 +49,6 @@ class PacmanGaussiansList(G1DList):
         if gaussianIndex == None:
             return None # wrong gaussianName
         return (self.genomeList[gaussianIndex], self.genomeList[gaussianIndex + 1])
-
 
 ############################
 ## Gaussian Initializator ##

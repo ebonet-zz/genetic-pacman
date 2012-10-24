@@ -28,7 +28,7 @@ def train():
     n_generatios = 500;
     
     # Creates the genome
-    genome = PacmanGaussianGenome
+    genome = PacmanGaussianGenome.PacmanGaussiansList()
     
     # The evaluator function
     genome.evaluator.set(eval_func);
