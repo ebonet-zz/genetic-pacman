@@ -86,7 +86,7 @@ def train():
     ga.setPopulationSize(POPULATION_SIZE)
     ga.setMutationRate(0.1)
     
-    # ga.setMultiProcessing()
+    ga.setMultiProcessing()
     
     ga.getPopulation().scaleMethod.set(Scaling.ExponentialScaling)
     print "Best individual: " + str(ga.evolve(freq_stats=1));  
