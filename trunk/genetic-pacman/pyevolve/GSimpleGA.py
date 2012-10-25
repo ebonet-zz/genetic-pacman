@@ -119,7 +119,7 @@ def ConvergenceCriteria(ga_engine):
 
    """
    pop = ga_engine.getPopulation()
-   return pop[0] == pop[len(pop)-1]
+   return pop[0] == pop[len(pop) - 1]
    
 def RawStatsCriteria(ga_engine):
    """ Terminate the evolution based on the raw stats
@@ -218,29 +218,29 @@ class GSimpleGA:
       if not isinstance(genome, GenomeBase):
          Util.raiseException("The genome must be a GenomeBase subclass", TypeError)
 
-      self.internalPop  = GPopulation(genome)
+      self.internalPop = GPopulation(genome)
       self.nGenerations = Consts.CDefGAGenerations
-      self.pMutation    = Consts.CDefGAMutationRate
-      self.pCrossover   = Consts.CDefGACrossoverRate
+      self.pMutation = Consts.CDefGAMutationRate
+      self.pCrossover = Consts.CDefGACrossoverRate
       self.nElitismReplacement = Consts.CDefGAElitismReplacement
       self.setPopulationSize(Consts.CDefGAPopulationSize)
-      self.minimax      = Consts.minimaxType["maximize"]
-      self.elitism      = True
+      self.minimax = Consts.minimaxType["maximize"]
+      self.elitism = True
 
       # Adapters
-      self.dbAdapter        = None
+      self.dbAdapter = None
       self.migrationAdapter = None
       
-      self.time_init       = None
+      self.time_init = None
       self.interactiveMode = interactiveMode
-      self.interactiveGen  = -1
+      self.interactiveGen = -1
       self.GPMode = False
 
-      self.selector            = FunctionSlot("Selector")
-      self.stepCallback        = FunctionSlot("Generation Step Callback")
+      self.selector = FunctionSlot("Selector")
+      self.stepCallback = FunctionSlot("Generation Step Callback")
       self.terminationCriteria = FunctionSlot("Termination Criteria")
       self.selector.set(Consts.CDefGASelector)
-      self.allSlots            = [ self.selector, self.stepCallback, self.terminationCriteria ]
+      self.allSlots = [ self.selector, self.stepCallback, self.terminationCriteria ]
 
       self.internalParams = {}
 
@@ -365,7 +365,7 @@ class GSimpleGA:
 
    def __repr__(self):
       """ The string representation of the GA Engine """
-      ret =  "- GSimpleGA\n"
+      ret = "- GSimpleGA\n"
       ret += "\tGP Mode:\t\t %s\n" % self.getGPMode()
       ret += "\tPopulation Size:\t %d\n" % (self.internalPop.popSize,)
       ret += "\tGenerations:\t\t %d\n" % (self.nGenerations,)
@@ -377,8 +377,8 @@ class GSimpleGA:
       ret += "\tElitism Replacement:\t %d\n" % (self.nElitismReplacement,)
       ret += "\tDB Adapter:\t\t %s\n" % (self.dbAdapter,)
       for slot in self.allSlots:
-         ret+= "\t" + slot.__repr__()
-      ret+="\n"
+         ret += "\t" + slot.__repr__()
+      ret += "\n"
       return ret
    
    def setMultiProcessing(self, flag=True, full_copy=False):
@@ -480,7 +480,7 @@ class GSimpleGA:
       :param rate: the rate, between 0.0 and 1.0
 
       """
-      if (rate>1.0) or (rate<0.0):
+      if (rate > 1.0) or (rate < 0.0):
          Util.raiseException("Mutation rate must be >= 0.0 and <= 1.0", ValueError)
       self.pMutation = rate
 
@@ -490,7 +490,7 @@ class GSimpleGA:
       :param rate: the rate, between 0.0 and 1.0
 
       """
-      if (rate>1.0) or (rate<0.0):
+      if (rate > 1.0) or (rate < 0.0):
          Util.raiseException("Crossover rate must be >= 0.0 and <= 1.0", ValueError)
       self.pCrossover = rate
 
@@ -667,7 +667,7 @@ class GSimpleGA:
       logging.debug("Evaluating the new created population.")
       newPop.evaluate()
 
-      #Niching methods- Petrowski's clearing
+      # Niching methods- Petrowski's clearing
       self.clear()
 
       if self.elitism:
@@ -675,11 +675,11 @@ class GSimpleGA:
          if self.getMinimax() == Consts.minimaxType["maximize"]:
             for i in xrange(self.nElitismReplacement):
                if self.internalPop.bestRaw(i).score > newPop.bestRaw(i).score:
-                  newPop[len(newPop)-1-i] = self.internalPop.bestRaw(i)
+                  newPop[len(newPop) - 1 - i] = self.internalPop.bestRaw(i)
          elif self.getMinimax() == Consts.minimaxType["minimize"]:
             for i in xrange(self.nElitismReplacement):
                if self.internalPop.bestRaw(i).score < newPop.bestRaw(i).score:
-                  newPop[len(newPop)-1-i] = self.internalPop.bestRaw(i)
+                  newPop[len(newPop) - 1 - i] = self.internalPop.bestRaw(i)
 
       self.internalPop = newPop
       self.internalPop.sort()
@@ -687,7 +687,10 @@ class GSimpleGA:
       logging.debug("The generation %d was finished.", self.currentGeneration)
 
       self.currentGeneration += 1
-
+      
+      print ""
+      print self.internalPop.bestRaw(),
+      
       return (self.currentGeneration == self.nGenerations)
    
    def printStats(self):
@@ -709,7 +712,7 @@ class GSimpleGA:
 
    def printTimeElapsed(self):
       """ Shows the time elapsed since the begin of evolution """
-      total_time = time()-self.time_init
+      total_time = time() - self.time_init
       print "Total time elapsed: %.3f seconds." % total_time
       return total_time
    
@@ -821,7 +824,7 @@ class GSimpleGA:
                         print
                         code.interact(interact_banner, local=session_locals)
 
-            if self.step(): break #exit if the number of generations is equal to the max. number of gens.
+            if self.step(): break  # exit if the number of generations is equal to the max. number of gens.
 
       except KeyboardInterrupt:
          logging.debug("CTRL-C detected, finishing evolution.")
