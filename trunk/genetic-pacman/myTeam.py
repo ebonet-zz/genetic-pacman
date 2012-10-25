@@ -18,7 +18,7 @@ from math import exp
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first='AttackAgent', second='AttackAgent'):
+               first='DoubleAgent', second='DoubleAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -127,8 +127,8 @@ class AttackAgent(CaptureAgent):
     
         previousPos = gameState.getAgentState(self.index).getPosition()
 
-        foodList = self.getFood(gameState).asList()
         foodGrid = self.getFood(gameState)
+        foodList = foodGrid.asList()
         capsules = self.getCapsules(gameState)
       
         allies = [gameState.getAgentState(i) for i in self.getTeam(gameState)]
@@ -139,7 +139,7 @@ class AttackAgent(CaptureAgent):
         # invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
         ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
       
-        evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, foodGrid, capsules, hunters, ghosts))
+        evalFunc = self.generateEvalFunc(self.generateOffensiveGaussians(foodList, foodGrid, capsules, hunters, ghosts))
     
         possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
         actionPoints = [evalFunc(cell) for cell in possibleCells]
@@ -160,11 +160,11 @@ class AttackAgent(CaptureAgent):
         dx, dy = Actions.directionToVector(action)
         return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
 
-    def generateGaussians(self, foodList, foodGrid, capsules, hunters, ghosts):
+    def generateOffensiveGaussians(self, foodList, foodGrid, capsules, hunters, ghosts):
         # def cellEvaluation(coordinates):
         #    return coordinates[0] + coordinates[1]
       
-        # chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3]
+        self.chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3]
         gaussians = []
       
         for food in foodList:
@@ -237,26 +237,41 @@ class DoubleAgent(CaptureAgent):
         '''
 
     def chooseAction(self, gameState):
-      
+        
         actions = gameState.getLegalActions(self.index)
         # actions = [a for a in actions if a != Directions.STOP]
     
         previousPos = gameState.getAgentState(self.index).getPosition()
 
-        foodList = self.getFood(gameState).asList()
         foodGrid = self.getFood(gameState)
+        foodList = foodGrid.asList()
         capsules = self.getCapsules(gameState)
+        
+        defenseFoodGrid = self.getFoodYouAreDefending(gameState)
+        defenseFoodList = defenseFoodGrid.asList()
+        defenseCapsules = self.getCapsulesYouAreDefending(gameState)
       
-        allies = [gameState.getAgentState(i) for i in self.getTeam(gameState)]
+        allies = [gameState.getAgentState(i) for i in self.getTeam(gameState) if i != self.index]
         hunters = [a for a in allies if a.isPacman and a.getPosition() != None]
-        # defenders = [a for a in allies if not a.isPacman and a.getPosition() != None]
+        defenders = [a for a in allies if not a.isPacman and a.getPosition() != None]
         
         enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
-        # invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+        invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
         ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
       
-        evalFunc = self.generateEvalFunc(self.generateGaussians(foodList, foodGrid, capsules, hunters, ghosts))
-    
+        isPacman = gameState.getAgentState(self.index).isPacman
+        amScared = gameState.getAgentState(self.index).scaredTimer != 0
+        
+        defendMode = False
+        if not isPacman:
+            if not defenders:
+                defendMode = True
+        
+        if not defendMode:
+            evalFunc = self.generateEvalFunc(self.generateOffensiveGaussians(foodList, foodGrid, capsules, hunters, ghosts))
+        else:
+            evalFunc = self.generateEvalFunc(self.generateDefenseGaussians(amScared, defenseFoodList, defenseCapsules, defenders, invaders))
+            
         possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
         actionPoints = [evalFunc(cell) for cell in possibleCells]
         
@@ -271,12 +286,8 @@ class DoubleAgent(CaptureAgent):
         bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
 
         return random.choice(bestActions)
-    
-    def getActionCoordinates(self, action, previousCoordinates):
-        dx, dy = Actions.directionToVector(action)
-        return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
 
-    def generateGaussians(self, foodList, foodGrid, capsules, hunters, ghosts):
+    def generateOffensiveGaussians(self, foodList, foodGrid, capsules, hunters, ghosts):
         # def cellEvaluation(coordinates):
         #    return coordinates[0] + coordinates[1]
       
@@ -311,6 +322,35 @@ class DoubleAgent(CaptureAgent):
               
         return gaussians
 
+    def generateDefenseGaussians(self, amScared, defenseFoodList, defenseCapsules, defenders, invaders):
+        # def cellEvaluation(coordinates):
+        #    return coordinates[0] + coordinates[1]
+      
+        chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
+                         10.0, 1.0, -150.0, 0.8, 300.0, 0.8, -5, 0.5, 22.0, 0.8, 100.0, 0.3]
+        gaussians = []
+      
+        for food in defenseFoodList:
+            gaussians.append(self.gaussian(chromoawesome[12], chromoawesome[13], food[0], food[1]))         
+            
+        for capsule in defenseCapsules:
+            gaussians.append(self.gaussian(chromoawesome[20], chromoawesome[21], capsule[0], capsule[1]))
+      
+        for invader in invaders:
+            if amScared:
+                gaussians.append(self.gaussian(chromoawesome[14], chromoawesome[15], invader.getPosition()[0], invader.getPosition()[1]))
+            else:
+                gaussians.append(self.gaussian(chromoawesome[16], chromoawesome[17], invader.getPosition()[0], invader.getPosition()[1]))
+                
+        for defender in defenders:
+            gaussians.append(self.gaussian(chromoawesome[18], chromoawesome[19], defender.getPosition()[0], defender.getPosition()[1]))
+              
+        return gaussians
+    
+    def getActionCoordinates(self, action, previousCoordinates):
+        dx, dy = Actions.directionToVector(action)
+        return (previousCoordinates[0] + dx, previousCoordinates[1] + dy)
+    
     def generateEvalFunc(self, gaussians):
         def evalC(coordinate):
             return sumGaussians(coordinate[0], coordinate[1], gaussians)
