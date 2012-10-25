@@ -21,9 +21,20 @@ def eval_func(chromosome):
     games = runGames(**options)    
 
     # scores = [game.state.data.score - len(game.state.getBlueFood().asList()) + 2 for game in games];
-    scores = [game.state.data.score + 100.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
+    # scores = [game.state.data.score + 100.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     # scores = [50.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
+    
+    foodEaten = [20 - len(game.state.getBlueFood().asList()) for game in games]
+    foodLost = [20 - len(game.state.getRedFood().asList()) for game in games]
+    pacmanKills = []
+    scores = []
+    for i in range(len(games)):
+        killBalance = (games[i].state.data.score - (foodEaten[i] - foodLost[i])) / 10.0
+        pacmanKills.append(killBalance)
+        scores.append(foodEaten[i] - foodLost[i] + killBalance)
+    
     avgScore = float(sum(scores)) / len(scores)
+    
 #    print "Chromosome: ",
 #    print chromosome.genomeList,
 #    print ""
@@ -75,7 +86,7 @@ def train():
     ga.setPopulationSize(POPULATION_SIZE)
     ga.setMutationRate(0.1)
     
-    ga.setMultiProcessing()
+    # ga.setMultiProcessing()
     
     ga.getPopulation().scaleMethod.set(Scaling.ExponentialScaling)
     print "Best individual: " + str(ga.evolve(freq_stats=1));  
