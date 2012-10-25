@@ -348,7 +348,7 @@ class CaptureRules:
     initState = GameState()
     initState.initialize(layout, len(agents))
     starter = random.randint(0, 1)
-    print('%s team starts' % ['Red', 'Blue'][starter])
+    # print('%s team starts' % ['Red', 'Blue'][starter])
     game = Game(agents, display, self, startingIndex=starter, muteAgents=muteAgents, catchExceptions=catchExceptions)
     game.state = initState
     game.length = length
@@ -369,18 +369,18 @@ class CaptureRules:
 
     if state.isOver():
       game.gameOver = True
-      if not game.rules.quiet:
-        if state.getRedFood().count() == MIN_FOOD:
-          print 'The Blue team has captured all but %d of the opponents\' dots.' % MIN_FOOD
-        if state.getBlueFood().count() == MIN_FOOD:
-          print 'The Red team has captured all but %d of the opponents\' dots.' % MIN_FOOD
-        if state.getBlueFood().count() > MIN_FOOD and state.getRedFood().count() > MIN_FOOD:
-          print 'Time is up.'
-          if state.data.score == 0: print 'Tie game!'
-          else:
-            winner = 'Red'
-            if state.data.score < 0: winner = 'Blue'
-            print 'The %s team wins by %d points.' % (winner, abs(state.data.score))
+#      if not game.rules.quiet:
+#        if state.getRedFood().count() == MIN_FOOD:
+#          print 'The Blue team has captured all but %d of the opponents\' dots.' % MIN_FOOD
+#        if state.getBlueFood().count() == MIN_FOOD:
+#          print 'The Red team has captured all but %d of the opponents\' dots.' % MIN_FOOD
+#        if state.getBlueFood().count() > MIN_FOOD and state.getRedFood().count() > MIN_FOOD:
+#          print 'Time is up.'
+#          if state.data.score == 0: print 'Tie game!'
+#          else:
+#            winner = 'Red'
+#            if state.data.score < 0: winner = 'Blue'
+#            print 'The %s team wins by %d points.' % (winner, abs(state.data.score))
 
   def getProgress(self, game):
     blue = 1.0 - (game.state.getBlueFood().count() / float(self._initBlueFood))
@@ -679,9 +679,9 @@ def readCommand(argv):
     redArgs['numTraining'] = options.numTraining
     blueArgs['numTraining'] = options.numTraining
   nokeyboard = options.textgraphics or options.quiet or options.numTraining > 0
-  print '\nRed team %s with %s:' % (options.red, redArgs)
+#  print '\nRed team %s with %s:' % (options.red, redArgs)
   redAgents = loadAgents(True, options.red, nokeyboard, redArgs)
-  print '\nBlue team %s with %s:' % (options.blue, blueArgs)
+#  print '\nBlue team %s with %s:' % (options.blue, blueArgs)
   blueAgents = loadAgents(False, options.blue, nokeyboard, blueArgs)
   args['agents'] = sum([list(el) for el in zip(redAgents, blueAgents)], [])  # list of agents
 
@@ -735,8 +735,8 @@ def loadAgents(isRed, factory, textgraphics, cmdLineArgs):
   args = dict()
   args.update(cmdLineArgs)  # Add command line args with priority
 
-  print "Loading Team:", factory
-  print "Arguments:", args
+#  print "Loading Team:", factory
+#  print "Arguments:", args
 
   try:
     createTeamFunc = getattr(module, 'createTeam')
@@ -769,13 +769,13 @@ def replayGame(layout, agents, actions, display, length, redTeamName, blueTeamNa
 
     display.finish()
 
-def runGames(layout, agents, display, length, numGames, record, numTraining, redTeamName, blueTeamName, muteAgents=False, catchExceptions=False, chromosome = []):
+def runGames(layout, agents, display, length, numGames, record, numTraining, redTeamName, blueTeamName, muteAgents=False, catchExceptions=False, chromosome=[]):
 
   rules = CaptureRules()
   games = []
 
-  if numTraining > 0:
-    print 'Playing %d training games' % numTraining
+#  if numTraining > 0:
+#    print 'Playing %d training games' % numTraining
 
   for i in range(numGames):
     beQuiet = i < numTraining
@@ -834,5 +834,5 @@ if __name__ == '__main__':
   """
   options = readCommand(sys.argv[1:])  # Get game components based on input
   for game in runGames(**options):
-    print game.state.data.score
+      print game.state.data.score
       

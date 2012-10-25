@@ -8,24 +8,27 @@ from pyevolve import GSimpleGA, PacmanGaussianGenome, Scaling
 from capture import runGames
 from capture import readCommand
 from pyevolve import Selectors
+from math import exp
 
 POPULATION_SIZE = 30
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam", "-b", "baselineTeam", "-Q", "-n", "5"]
+    argv = ["-r", "myTeam", "-b", "baselineTeam", "-Q", "-n", "3"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
     
     games = runGames(**options)    
 
-    scores = [game.state.data.score for game in games];
-    
+    # scores = [game.state.data.score - len(game.state.getBlueFood().asList()) + 2 for game in games];
+    scores = [game.state.data.score + 70.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
+    # scores = [50.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     avgScore = float(sum(scores)) / len(scores)
-    print "chromosome: ",
-    print chromosome.genomeList,
-    print " got a score of: ",
-    print avgScore
+#    print "Chromosome: ",
+#    print chromosome.genomeList,
+#    print ""
+#    print " got a score of: ",
+#    print avgScore
     
     return avgScore
     # nWins = [s>0 for s in scores].count(True);
@@ -34,7 +37,7 @@ def eval_func(chromosome):
   
 def train():
     
-    n_generatios = 500;
+    n_generatios = 10
     
     # Creates the genome
     genome = PacmanGaussianGenome.PacmanGaussiansList()
@@ -53,8 +56,10 @@ def train():
     ga.setPopulationSize(POPULATION_SIZE)
     # ga.setMutationRate(0.2)
     
+    ga.setMultiProcessing()
+    
     ga.getPopulation().scaleMethod.set(Scaling.ExponentialScaling)
-    ga.evolve(freq_stats=10);  
+    print "Best individual: " + str(ga.evolve(freq_stats=1));  
   
 if __name__ == "__main__":
     train()  
