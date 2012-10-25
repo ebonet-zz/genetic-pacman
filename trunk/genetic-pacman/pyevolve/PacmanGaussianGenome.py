@@ -112,13 +112,13 @@ def PacmanGaussianMutator(genome, **args):
                 
                     genome[it] = final_value
                 elif it < listSize - 1:
-                    final_value = genome[it] + rand_gauss(mu, sigma)
+                    final_value = genome[it] + rand_gauss(mu, 50)
                     final_value = min(final_value, genome.getParam("minMean"))
                     final_value = max(final_value, genome.getParam("maxMean"))
                 
                     genome[it] = final_value
                 else:
-                    final_value = genome[it] + rand_gauss(mu, sigma)
+                    final_value = genome[it] + rand_gauss(mu, 0.3)
                     final_value = min(final_value, genome.getParam("minWallPenalty"))
                     final_value = max(final_value, genome.getParam("maxWallPenalty"))
                 
@@ -136,13 +136,13 @@ def PacmanGaussianMutator(genome, **args):
             
                 genome[which_gene] = final_value
             elif which_gene < listSize - 1:
-                final_value = genome[which_gene] + rand_gauss(mu, sigma)
+                final_value = genome[which_gene] + rand_gauss(mu, 50)
                 final_value = min(final_value, genome.getParam("minMean"))
                 final_value = max(final_value, genome.getParam("maxMean"))
             
                 genome[which_gene] = final_value
             else:
-                final_value = genome[which_gene] + rand_gauss(mu, sigma)
+                final_value = genome[which_gene] + rand_gauss(mu, 0.3)
                 final_value = min(final_value, genome.getParam("minWallPenalty"))
                 final_value = max(final_value, genome.getParam("maxWallPenalty"))
             
