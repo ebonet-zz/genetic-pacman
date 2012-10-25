@@ -36,8 +36,27 @@ def eval_func(chromosome):
     # return nWins;
   
 def train():
+    import sys
     
-    n_generatios = 10
+    class Logger(object):
+        def __init__(self, filename="Default.log"):
+            self.terminal = sys.stdout
+            self.filename = filename
+            self.log = open(self.filename, "w")
+            # self.log = open(self.filename, "a")
+            self.log.close()
+            
+        def write(self, message):
+            self.terminal.write(message)
+            self.log = open(self.filename, "a")
+            self.log.write(message)
+            self.log.close()
+
+    sys.stdout = Logger("evolution.txt")
+    
+    print "Evolution started"  # this is should be saved in yourlogfilename.txt
+
+    n_generatios = 300
     
     # Creates the genome
     genome = PacmanGaussianGenome.PacmanGaussiansList()
