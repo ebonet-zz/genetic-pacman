@@ -73,7 +73,7 @@ def train():
     ga.setGenerations(n_generatios)
     ga.terminationCriteria.set(GSimpleGA.ConvergenceCriteria)
     ga.setPopulationSize(POPULATION_SIZE)
-    # ga.setMutationRate(0.2)
+    ga.setMutationRate(0.1)
     
     ga.setMultiProcessing()
     
