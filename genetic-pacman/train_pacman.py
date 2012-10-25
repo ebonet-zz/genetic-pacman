@@ -9,6 +9,8 @@ from capture import runGames
 from capture import readCommand
 from pyevolve import Selectors
 
+POPULATION_SIZE = 30
+
 def eval_func(chromosome):
     # arguments for the pacman game
     argv = ["-r", "myTeam", "-b", "baselineTeam", "-Q", "-n", "5"]
@@ -48,6 +50,7 @@ def train():
     ga.selector.set(Selectors.GRouletteWheel)
     ga.setGenerations(n_generatios)
     ga.terminationCriteria.set(GSimpleGA.ConvergenceCriteria)
+    ga.setPopulationSize(POPULATION_SIZE)
     # ga.setMutationRate(0.2)
     
     ga.getPopulation().scaleMethod.set(Scaling.ExponentialScaling)
