@@ -11,7 +11,7 @@ from pyevolve import Selectors
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam","-b","baselineTeam","-Q","-n","5"]
+    argv = ["-r", "myTeam", "-b", "baselineTeam", "-Q", "-n", "5"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
     
@@ -28,7 +28,7 @@ def eval_func(chromosome):
     return avgScore
     # nWins = [s>0 for s in scores].count(True);
 
-    #return nWins;
+    # return nWins;
   
 def train():
     
@@ -41,7 +41,7 @@ def train():
     genome.evaluator.set(eval_func);
 
     # Genetic Algorithm Instance
-    ga =  GSimpleGA.GSimpleGA(genome);
+    ga = GSimpleGA.GSimpleGA(genome);
     
     # Set the Roulette Wheel selector method, the number of generations and
     # the termination criteria
@@ -51,7 +51,7 @@ def train():
     # ga.setMutationRate(0.2)
     
     ga.getPopulation().scaleMethod.set(Scaling.ExponentialScaling)
-    ga.evolve(freq_stats=100);  
+    ga.evolve(freq_stats=10);  
   
 if __name__ == "__main__":
     train()  
