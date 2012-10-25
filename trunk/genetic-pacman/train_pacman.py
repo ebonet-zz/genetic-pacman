@@ -4,24 +4,31 @@ Created on Oct 20, 2012
 @author: BONET
 '''
 
-from pyevolve import GSimpleGA, PacmanGaussianGenome
+from pyevolve import GSimpleGA, PacmanGaussianGenome, Scaling
 from capture import runGames
 from capture import readCommand
 from pyevolve import Selectors
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam","-b","baselineTeam","-n","5"]
+    argv = ["-r", "myTeam","-b","baselineTeam","-Q","-n","5"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
+    
     games = runGames(**options)    
 
     scores = [game.state.data.score for game in games];
     
-    nWins = [s>0 for s in scores].count(True);
+    avgScore = float(sum(scores)) / len(scores)
+    print "chromosome: ",
+    print chromosome.genomeList,
+    print " got a score of: ",
+    print avgScore
+    
+    return avgScore
+    # nWins = [s>0 for s in scores].count(True);
 
-    return nWins;
-  
+    #return nWins;
   
 def train():
     
@@ -41,7 +48,9 @@ def train():
     ga.selector.set(Selectors.GRouletteWheel)
     ga.setGenerations(n_generatios)
     ga.terminationCriteria.set(GSimpleGA.ConvergenceCriteria)
+    # ga.setMutationRate(0.2)
     
+    ga.getPopulation().scaleMethod.set(Scaling.ExponentialScaling)
     ga.evolve(freq_stats=100);  
   
 if __name__ == "__main__":
