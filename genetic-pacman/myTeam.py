@@ -7,9 +7,8 @@
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
 from captureAgents import CaptureAgent
-import random, time, util
-from game import Directions, Grid, Actions
-import game
+import random
+from game import Directions, Actions
 from sys import maxint
 from math import exp
 
@@ -71,8 +70,9 @@ class DoubleAgent(CaptureAgent):
         ''' 
         Your initialization code goes here, if you need any.
         '''
-        #       self.chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
-        #                        0.0, 0.0001, -150.0, 0.8, 300.0, 0.8, 0.0, 0.0001, 0.0, 0.0001, 0.8]
+#        self.chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
+#                                0.0, 0.0001, -150.0, 0.8, 300.0, 0.8, 0.0, 0.0001, 0.0, 0.0001, 0.8]
+#        self.chromoawesome = [260.1221961770434, 1.2307570864910296, 15.525350102296613, 2.58321796414419, 300, 2.3726334097519084, 35.682020138330415, 1.7738613326047408, 300, 1.5179749288589142, 47.71471321238431, 2.799674870778586, -12.224621722608049, 1.935882980254696, 223.53957953931115, 0.023452277109883735, 187.6345079098079, 1.2746609980974695, -122.15114434214826, 0.17791684974554756, 300, 1.8120862308524368, 0.8193817069374121]
 
     def chooseAction(self, gameState):
         
