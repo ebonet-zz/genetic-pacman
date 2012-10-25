@@ -106,19 +106,19 @@ def PacmanGaussianMutator(genome, **args):
         for it in xrange(listSize):
             if Util.randomFlipCoin(args["pmut"]):
                 if it % 2 != 0:
-                    final_value = genome[it] + rand_uniform(-0.1, 0.1)
+                    final_value = genome[it] + rand_uniform(-0.3, 0.3)
                     final_value = max(final_value, genome.getParam("minSigma"))
                     final_value = min(final_value, genome.getParam("maxSigma"))
                 
                     genome[it] = final_value
                 elif it < listSize - 1:
-                    final_value = genome[it] + rand_uniform(-10, 10)
+                    final_value = genome[it] + rand_uniform(-30, 30)
                     final_value = max(final_value, genome.getParam("minMean"))
                     final_value = min(final_value, genome.getParam("maxMean"))
                 
                     genome[it] = final_value
                 else:
-                    final_value = genome[it] + rand_uniform(-0.03, 0.03)
+                    final_value = genome[it] + rand_uniform(-0.1, 0.1)
                     final_value = max(final_value, genome.getParam("minWallPenalty"))
                     final_value = min(final_value, genome.getParam("maxWallPenalty"))
                 
@@ -130,19 +130,19 @@ def PacmanGaussianMutator(genome, **args):
         for it in xrange(int(round(mutations))):
             which_gene = rand_randint(0, listSize - 1)
             if which_gene % 2 != 0:
-                final_value = genome[which_gene ] + rand_uniform(-0.1, 0.1)
+                final_value = genome[which_gene ] + rand_uniform(-0.3, 0.3)
                 final_value = max(final_value, genome.getParam("minSigma"))
                 final_value = min(final_value, genome.getParam("maxSigma"))
             
                 genome[which_gene] = final_value
             elif which_gene < listSize - 1:
-                final_value = genome[which_gene] + rand_uniform(-10, 10)
+                final_value = genome[which_gene] + rand_uniform(-30, 30)
                 final_value = max(final_value, genome.getParam("minMean"))
                 final_value = min(final_value, genome.getParam("maxMean"))
             
                 genome[which_gene] = final_value
             else:
-                final_value = genome[which_gene] + rand_uniform(-0.03, 0.03)
+                final_value = genome[which_gene] + rand_uniform(-0.1, 0.1)
                 final_value = max(final_value, genome.getParam("minWallPenalty"))
                 final_value = min(final_value, genome.getParam("maxWallPenalty"))
             
