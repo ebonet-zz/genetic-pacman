@@ -5,7 +5,6 @@ Created on Oct 24, 2012
 '''
 import Util
 from pyevolve.G1DList import G1DList
-from pyevolve.Crossovers import G1DListCrossoverUniform
 from random import randint as rand_randint, uniform as rand_uniform, gauss as rand_gauss
 from pyevolve import Consts
 
@@ -13,11 +12,12 @@ NUMBER_OF_CROSSOVERS = 5
 
 NUMBER_OF_GAUSSIANS_TYPES = 11
 CHROMOSOME_LENGTH = 23
-RANGE_SIGMA_MIN = 0
-RANGE_SIGMA_MAX = 10
 
-RANGE_MEAN_MIN = -50
-RANGE_MEAN_MAX = 50
+RANGE_SIGMA_MIN = 0
+RANGE_SIGMA_MAX = 3
+
+RANGE_MEAN_MIN = -300
+RANGE_MEAN_MAX = 300
 
 RANGE_WALL_PENALTY_MIN = 0
 RANGE_WALL_PENALTY_MAX = 1
