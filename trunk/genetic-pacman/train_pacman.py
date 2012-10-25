@@ -21,7 +21,7 @@ def eval_func(chromosome):
     games = runGames(**options)    
 
     # scores = [game.state.data.score - len(game.state.getBlueFood().asList()) + 2 for game in games];
-    scores = [game.state.data.score + 70.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
+    scores = [game.state.data.score + 100.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     # scores = [50.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     avgScore = float(sum(scores)) / len(scores)
 #    print "Chromosome: ",

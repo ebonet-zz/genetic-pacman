@@ -6,7 +6,7 @@ Created on Oct 24, 2012
 import Util
 from pyevolve.G1DList import G1DList
 from random import randint as rand_randint, uniform as rand_uniform, gauss as rand_gauss
-from pyevolve import Consts
+from pyevolve import Consts, Crossovers
 
 NUMBER_OF_CROSSOVERS = 5
 
@@ -48,7 +48,7 @@ class PacmanGaussiansList(G1DList):
                        minWallPenalty=RANGE_WALL_PENALTY_MIN, maxWallPenalty=RANGE_WALL_PENALTY_MAX)
         self.initializator.set(PacmanGaussianInitializator)
         self.mutator.set(PacmanGaussianMutator)
-        self.crossover.set(PacmanCrossover)
+        self.crossover.set(Crossovers.G1DListCrossoverUniform)
         if initialList:
             self.genomeList = initialList
     
