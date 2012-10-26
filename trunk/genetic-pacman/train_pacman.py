@@ -24,14 +24,14 @@ def eval_func(chromosome):
     # scores = [game.state.data.score + 100.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     # scores = [50.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     
-    foodEaten = [20 - len(game.state.getBlueFood().asList()) for game in games]
-    foodLost = [20 - len(game.state.getRedFood().asList()) for game in games]
-    pacmanKills = []
-    scores = []
-    for i in range(len(games)):
-        killBalance = (games[i].state.data.score - (foodEaten[i] - foodLost[i])) / 10.0
-        pacmanKills.append(killBalance)
-        scores.append(foodEaten[i] - foodLost[i] + killBalance)
+#    foodEaten = [20 - len(game.state.getBlueFood().asList()) for game in games]
+#    foodLost = [20 - len(game.state.getRedFood().asList()) for game in games]
+#    pacmanKills = []
+    scores = [game.state.data.score for game in games]
+#    for i in range(len(games)):
+#        killBalance = (games[i].state.data.score - (foodEaten[i] - foodLost[i])) / 10.0
+#        pacmanKills.append(killBalance)
+#        scores.append(foodEaten[i] - foodLost[i] + killBalance)
     
     avgScore = float(sum(scores)) / len(scores)
     
@@ -67,7 +67,7 @@ def train():
     
     print "Evolution started"  # this is should be saved in yourlogfilename.txt
 
-    n_generatios = 300
+    n_generatios = 75
     
     # Creates the genome
     genome = PacmanGaussianGenome.PacmanGaussiansList()
@@ -84,7 +84,7 @@ def train():
     ga.setGenerations(n_generatios)
     ga.terminationCriteria.set(GSimpleGA.ConvergenceCriteria)
     ga.setPopulationSize(POPULATION_SIZE)
-    ga.setMutationRate(0.1)
+    ga.setMutationRate(0.06)
     
     ga.setMultiProcessing()
     
