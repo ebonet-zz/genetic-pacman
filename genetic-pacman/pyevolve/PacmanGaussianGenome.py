@@ -46,7 +46,8 @@ class PacmanGaussiansList(G1DList):
         G1DList.__init__(self, CHROMOSOME_LENGTH)    
         self.setParams(minMean=RANGE_MEAN_MIN, maxMean=RANGE_MEAN_MAX, minSigma=RANGE_SIGMA_MIN, maxSigma=RANGE_SIGMA_MAX,
                        minWallPenalty=RANGE_WALL_PENALTY_MIN, maxWallPenalty=RANGE_WALL_PENALTY_MAX)
-        self.initializator.set(PacmanGaussianInitializator)
+#        self.initializator.set(PacmanGaussianInitializator)
+        self.initializator.set(PacmanFixStartInitializator)
         self.mutator.set(PacmanGaussianMutator)
         self.crossover.set(Crossovers.G1DListCrossoverUniform)
         if initialList:
@@ -61,9 +62,9 @@ class PacmanGaussiansList(G1DList):
             return None  # wrong gaussianName
         return (self.genomeList[gaussianIndex], self.genomeList[gaussianIndex + 1])
 
-############################
-# # Gaussian Initializator ##
-############################
+###################
+#  Initializator ##
+###################
 def PacmanGaussianInitializator(genome, **args):
     listSize = genome.getListSize()
     
@@ -81,6 +82,36 @@ def PacmanGaussianInitializator(genome, **args):
         else:
             result.append(rand_uniform(minSigma, maxSigma))
     result.append(rand_uniform(minWallPenalty, maxWallPenalty))
+    genome.genomeList = result        
+    
+def PacmanFixStartInitializator(genome, **args):
+    chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
+                          0.0, 0.0001, -150.0, 0.8, 300.0, 0.8, 0.0, 0.0001, 0.0, 0.0001, 0.8]
+    
+    result = []
+    for i in range(0, CHROMOSOME_LENGTH):
+        if i % 2 != 0:
+            ch = abs(chromoawesome[i])
+            final_value = chromoawesome[i] + rand_uniform(-ch/10.0, ch/10.0)
+            final_value = max(final_value, genome.getParam("minSigma"))
+            final_value = min(final_value, genome.getParam("maxSigma"))
+        
+            result.append(final_value)
+        elif i < CHROMOSOME_LENGTH - 1:
+            ch = abs(chromoawesome[i])
+            final_value = chromoawesome[i] + rand_uniform(-ch/10.0, ch/10.0)
+            final_value = max(final_value, genome.getParam("minMean"))
+            final_value = min(final_value, genome.getParam("maxMean"))
+        
+            result.append(final_value)
+        else:
+            ch = abs(chromoawesome[i])
+            final_value = chromoawesome[i] + rand_uniform(-ch/10.0, ch/10.0)
+            final_value = max(final_value, genome.getParam("minWallPenalty"))
+            final_value = min(final_value, genome.getParam("maxWallPenalty"))
+        
+            result.append(final_value)
+
     genome.genomeList = result        
     
 
