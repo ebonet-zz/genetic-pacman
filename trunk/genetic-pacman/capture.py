@@ -48,7 +48,7 @@ import sys, util, types, time, random
 import keyboardAgents
 
 # If you change these, you won't affect the server, so you can't cheat
-KILL_POINTS = 10
+KILL_POINTS = 1
 SONAR_NOISE_RANGE = 13  # Must be odd
 SONAR_NOISE_VALUES = [i - (SONAR_NOISE_RANGE - 1) / 2 for i in range(SONAR_NOISE_RANGE)]
 SIGHT_RANGE = 100000  # Manhattan distance
@@ -348,7 +348,7 @@ class CaptureRules:
     initState = GameState()
     initState.initialize(layout, len(agents))
     starter = random.randint(0, 1)
-    # print('%s team starts' % ['Red', 'Blue'][starter])
+#    print('%s team starts' % ['Red', 'Blue'][starter])
     game = Game(agents, display, self, startingIndex=starter, muteAgents=muteAgents, catchExceptions=catchExceptions)
     game.state = initState
     game.length = length
@@ -774,8 +774,8 @@ def runGames(layout, agents, display, length, numGames, record, numTraining, red
   rules = CaptureRules()
   games = []
 
-#  if numTraining > 0:
-#    print 'Playing %d training games' % numTraining
+  if numTraining > 0:
+    print 'Playing %d training games' % numTraining
 
   for i in range(numGames):
     beQuiet = i < numTraining
@@ -787,7 +787,7 @@ def runGames(layout, agents, display, length, numGames, record, numTraining, red
     else:
         gameDisplay = display
         rules.quiet = False
-    
+        
     for agent in agents:
         if "setChromosome" in dir(agent):
             agent.setChromosome(chromosome)
@@ -814,11 +814,11 @@ def runGames(layout, agents, display, length, numGames, record, numTraining, red
     scores = [game.state.data.score for game in games]
     redWinRate = [s > 0 for s in scores].count(True) / float(len(scores))
     blueWinRate = [s < 0 for s in scores].count(True) / float(len(scores))
-    # print 'Average Score:', sum(scores) / float(len(scores))
-    # print 'Scores:       ', ', '.join([str(score) for score in scores])
-    # print 'Red Win Rate:  %d/%d (%.2f)' % ([s > 0 for s in scores].count(True), len(scores), redWinRate)
-    # print 'Blue Win Rate: %d/%d (%.2f)' % ([s < 0 for s in scores].count(True), len(scores), blueWinRate)
-    # print 'Record:       ', ', '.join([('Blue', 'Tie', 'Red')[max(0, min(2, 1 + s))] for s in scores])
+#    print 'Average Score:', sum(scores) / float(len(scores))
+#    print 'Scores:       ', ', '.join([str(score) for score in scores])
+#    print 'Red Win Rate:  %d/%d (%.2f)' % ([s > 0 for s in scores].count(True), len(scores), redWinRate)
+#    print 'Blue Win Rate: %d/%d (%.2f)' % ([s < 0 for s in scores].count(True), len(scores), blueWinRate)
+#    print 'Record:       ', ', '.join([('Blue', 'Tie', 'Red')[max(0, min(2, 1 + s))] for s in scores])
   return games
 
 if __name__ == '__main__':
@@ -833,6 +833,4 @@ if __name__ == '__main__':
   > python capture.py --help
   """
   options = readCommand(sys.argv[1:])  # Get game components based on input
-  for game in runGames(**options):
-      print game.state.data.score
-      
+  runGames(**options)
