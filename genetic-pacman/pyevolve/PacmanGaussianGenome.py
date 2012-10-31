@@ -85,28 +85,27 @@ def PacmanGaussianInitializator(genome, **args):
     genome.genomeList = result        
     
 def PacmanFixStartInitializator(genome, **args):
-    chromoawesome = [20.0, 1.0, -150.0, 0.8, 200.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
-                          0.0, 0.0001, -150.0, 0.8, 300.0, 0.8, 0.0, 0.0001, 0.0, 0.0001, 0.8]
+    chromoawesome = [21.77818374326172, 0.9597540754626267, -143.32267794094264, 0.7543544181113817, 211.9781474100516, 0.5375616283419553, -4.709305230513974, 0.49286839690855866, 21.334612176781324, 0.7817497947845603, 97.29227658173423, 0.2705714580258125, 0.0, 0.01, -150.1191723864983, 0.7742909839284868, 288.12887233960225, 0.8864990312498744, -18.539086713728302, 0.01, 0.0, 0.01, 0.8240894880573676]
     
     result = []
     for i in range(0, CHROMOSOME_LENGTH):
         if i % 2 != 0:
             ch = abs(chromoawesome[i])
-            final_value = chromoawesome[i] + rand_uniform(-ch/10.0, ch/10.0)
+            final_value = chromoawesome[i] + rand_uniform(-ch / 10.0, ch / 10.0)
             final_value = max(final_value, genome.getParam("minSigma"))
             final_value = min(final_value, genome.getParam("maxSigma"))
         
             result.append(final_value)
         elif i < CHROMOSOME_LENGTH - 1:
             ch = abs(chromoawesome[i])
-            final_value = chromoawesome[i] + rand_uniform(-ch/10.0, ch/10.0)
+            final_value = chromoawesome[i] + rand_uniform(-ch / 10.0, ch / 10.0)
             final_value = max(final_value, genome.getParam("minMean"))
             final_value = min(final_value, genome.getParam("maxMean"))
         
             result.append(final_value)
         else:
             ch = abs(chromoawesome[i])
-            final_value = chromoawesome[i] + rand_uniform(-ch/10.0, ch/10.0)
+            final_value = chromoawesome[i] + rand_uniform(-ch / 10.0, ch / 10.0)
             final_value = max(final_value, genome.getParam("minWallPenalty"))
             final_value = min(final_value, genome.getParam("maxWallPenalty"))
         

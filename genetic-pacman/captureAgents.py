@@ -27,15 +27,15 @@ class AgentFactory:
     "Returns the agent for the provided index."
     util.raiseNotDefined()
 
-class RandomAgent(Agent):
+class RandomAgent( Agent ):
   """
   A random agent that abides by the rules.
   """
-  def __init__(self, index):
+  def __init__( self, index ):
     self.index = index
 
-  def getAction(self, state):
-    return random.choice(state.getLegalActions(self.index))
+  def getAction( self, state ):
+    return random.choice( state.getLegalActions( self.index ) )
 
 class CaptureAgent(Agent):
   """
@@ -49,7 +49,7 @@ class CaptureAgent(Agent):
   # Methods to store key info #
   #############################
 
-  def __init__(self, index, timeForComputing=.1):
+  def __init__( self, index, timeForComputing = .1 ):
     """
     Lists several variables you can query:
     self.index = index for this agent
@@ -116,29 +116,6 @@ class CaptureAgent(Agent):
     " Changing this won't affect pacclient.py, but will affect capture.py "
     return gameState.makeObservation(self.index)
 
-
-  def debugDraw(self, cells, color, clear=False):
-    """
-    Draws a colored box on each of the cells you specify. If clear is True,
-    will clear all old drawings before drawing on the specified cells.
-    This is useful for debugging the locations that your code works with.
-
-    color: list of RGB values between 0 and 1 (i.e. [1,0,0] for red)
-    cells: list of game positions to draw on  (i.e. [(20,5), (3,22)])
-    """
-    if self.display:
-      from captureGraphicsDisplay import PacmanGraphics
-      if isinstance(self.display, PacmanGraphics):
-        if not type(cells) is list:
-          cells = [cells]
-        self.display.debugDraw(cells, color, clear)
-
-  def debugClear(self):
-    if self.display:
-      from captureGraphicsDisplay import PacmanGraphics
-      if isinstance(self.display, PacmanGraphics):
-        self.display.clearDebug()
-        
   #################
   # Action Choice #
   #################
@@ -289,18 +266,18 @@ class CaptureAgent(Agent):
     if self.display != None and 'updateDistributions' in dir(self.display):
       self.display.updateDistributions(dists)
     else:
-      self._distributions = dists  # These can be read by pacclient.py
+      self._distributions = dists # These can be read by pacclient.py
 
 
-class TimeoutAgent(Agent):
+class TimeoutAgent( Agent ):
   """
   A random agent that takes too much time. Taking
   too much time results in penalties and random moves.
   """
-  def __init__(self, index):
+  def __init__( self, index ):
     self.index = index
 
-  def getAction(self, state):
+  def getAction( self, state ):
     import random, time
     time.sleep(2.0)
-    return random.choice(state.getLegalActions(self.index))
+    return random.choice( state.getLegalActions( self.index ) )

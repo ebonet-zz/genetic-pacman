@@ -669,11 +669,7 @@ if __name__ == '__main__':
   > python pacman.py --help
   """
   args = readCommand( sys.argv[1:] ) # Get game components based on input
-  games = runGames( **args )
-  
-  for game in games:
-    print game.state.getScore();
-
+  runGames( **args )
 
   # import cProfile
   # cProfile.run("runGames( **args )")
