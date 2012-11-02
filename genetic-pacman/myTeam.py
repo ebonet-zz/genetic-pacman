@@ -70,7 +70,7 @@ class DoubleAgent(CaptureAgent):
         ''' 
         Your initialization code goes here, if you need any.
         '''
-        self.chromoawesome = [30.0, 1.0, -175.0, 0.8, 20.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
+        self.chromoawesome = [30.0, 1.0, -175.0, 0.8, 20.0, 0.5, -5, 0.5, 40.0, 0.8, 100.0, 0.3,
                       0.0, 0.01, 0.0, 0.8, 500.0, 0.8, -1.0, 0.5, 0.0, 0.0001, 0.8]
 
         # Optimization against Team 8 (30 gen): [19.60658541353829, 0.940895933865237, -187.15948708840563, 0.7079218032373564, 207.89442563652972, 0.3397370473812497, -9.044247354790699, 0.7873758162190336, 21.899493382459035, 0.6232401526021549, 96.10925027797794, 0.386529842139278, -14.68299588258282, 0.01080268336234187, -136.71595724639414, 0.7145040281953825, 234.37790341153197, 1.3925100965941384, -4.507539591345587, 0.01, 23.996543624921365, 0.01, 0.8371376287626084]
@@ -94,7 +94,7 @@ class DoubleAgent(CaptureAgent):
         actions = [a for a in gameState.getLegalActions(self.index) if a != Directions.STOP]
         
         previousPos = gameState.getAgentState(self.index).getPosition()
-        previousDirection = gameState.getAgentState(self.index).getDirection()
+        # previousDirection = gameState.getAgentState(self.index).getDirection()
         possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
 
         foodGrid = self.getFood(gameState)
