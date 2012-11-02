@@ -70,7 +70,8 @@ class DoubleAgent(CaptureAgent):
         ''' 
         Your initialization code goes here, if you need any.
         '''
-        self.chromoawesome = [21.77818374326172, 0.9597540754626267, -143.32267794094264, 0.7543544181113817, 211.9781474100516, 0.5375616283419553, -4.709305230513974, 0.49286839690855866, 21.334612176781324, 0.7817497947845603, 97.29227658173423, 0.2705714580258125, 0.0, 0.01, -150.1191723864983, 0.7742909839284868, 288.12887233960225, 0.8864990312498744, -18.539086713728302, 0.01, 0.0, 0.01, 0.8240894880573676]
+        self.chromoawesome = [30.0, 1.0, -175.0, 0.8, 20.0, 0.5, -5, 0.5, 22.0, 0.8, 100.0, 0.3,
+                      0.0, 0.01, 0.0, 0.8, 500.0, 0.8, -1.0, 0.5, 0.0, 0.0001, 0.8]
 
         # Optimization against Team 8 (30 gen): [19.60658541353829, 0.940895933865237, -187.15948708840563, 0.7079218032373564, 207.89442563652972, 0.3397370473812497, -9.044247354790699, 0.7873758162190336, 21.899493382459035, 0.6232401526021549, 96.10925027797794, 0.386529842139278, -14.68299588258282, 0.01080268336234187, -136.71595724639414, 0.7145040281953825, 234.37790341153197, 1.3925100965941384, -4.507539591345587, 0.01, 23.996543624921365, 0.01, 0.8371376287626084]
 
@@ -91,8 +92,10 @@ class DoubleAgent(CaptureAgent):
         
         # actions = gameState.getLegalActions(self.index)
         actions = [a for a in gameState.getLegalActions(self.index) if a != Directions.STOP]
-    
+        
         previousPos = gameState.getAgentState(self.index).getPosition()
+        previousDirection = gameState.getAgentState(self.index).getDirection()
+        possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
 
         foodGrid = self.getFood(gameState)
         foodList = foodGrid.asList()
@@ -111,7 +114,7 @@ class DoubleAgent(CaptureAgent):
         invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
         ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
       
-        # isPacman = gameState.getAgentState(self.index).isPacman
+        isPacman = gameState.getAgentState(self.index).isPacman
         amScared = gameState.getAgentState(self.index).scaredTimer != 0
         
         defendMode = False
@@ -128,29 +131,30 @@ class DoubleAgent(CaptureAgent):
                 defendMode = True  
         
         if not defendMode:
-            evalFunc = self.generateEvalFunc(self.generateOffensiveGaussians(wallsGrid, foodList, foodGrid, capsules, hunters, ghosts))
+            evalFunc = self.generateEvalFunc(self.generateOffensiveGaussians(wallsGrid, foodList, foodGrid, capsules, hunters, ghosts, defenders, possibleCells, previousPos, isPacman))
         else:
-            evalFunc = self.generateEvalFunc(self.generateDefenseGaussians(amScared, defenseFoodList, defenseCapsules, defenders, invaders))
+            # defensive mode
+            # if I was attacking, and I have food nearby, eat the food
+            # because I will eventually die and defend OR generate more points than the attacker OR defend because there is no food nearby
+            for cell in possibleCells:
+                if cell in foodList:
+                    return [a for a, c in zip(actions, possibleCells) if c == cell][0]
             
-        possibleCells = [self.getActionCoordinates(action, previousPos) for action in actions]
+            evalFunc = self.generateEvalFunc(self.generateDefenseGaussians(amScared, defenseFoodList, defenseCapsules, defenders, invaders, ghosts, possibleCells))
+            
+        
         actionPoints = [evalFunc(cell) for cell in possibleCells]
         
         if not actionPoints:
             return Directions.STOP
-    
+        
         maxValue = max(actionPoints)
 
-#        for i in range(len(possibleCells)):
-#            self.debugDraw(possibleCells[i], [actionPoints[i] / 60, 0, 0] if actionPoints[i] > 0 else [0, -actionPoints[i] / 250, 0], False) 
-        
         bestActions = [a for a, v in zip(actions, actionPoints) if v == maxValue]
 
         return random.choice(bestActions)
 
-    def generateOffensiveGaussians(self, wallsGrid, foodList, foodGrid, capsules, hunters, ghosts):
-        # def cellEvaluation(coordinates):
-        #    return coordinates[0] + coordinates[1]
-      
+    def generateOffensiveGaussians(self, wallsGrid, foodList, foodGrid, capsules, hunters, ghosts, defenders, possibleCells, previousPos, isPacman):
         gaussians = []
       
         for food in foodList:
@@ -171,16 +175,26 @@ class DoubleAgent(CaptureAgent):
             gaussians.append(self.gaussian(self.chromoawesome[8], self.chromoawesome[9], capsule[0], capsule[1]))
       
         for ghost in ghosts:
-            if ghost.scaredTimer == 0:
-                ghostGaussian = self.gaussian(self.chromoawesome[2], self.chromoawesome[3], ghost.getPosition()[0], ghost.getPosition()[1])
-                gaussians.append(ghostGaussian)
-                gaussians.append(self.calculateWallPenalty(wallsGrid, ghostGaussian))
+            if ghost.scaredTimer == 0:  # ghost offers danger
+                # If I'm in defense, only worry about if I'm close
+                if isPacman or self.getMazeDistance(ghost.getPosition(), previousPos) < 8:
+                    ghostGaussian = self.gaussian(self.chromoawesome[2], self.chromoawesome[3], ghost.getPosition()[0], ghost.getPosition()[1])
+                    gaussians.append(ghostGaussian)
+                    gaussians.append(self.calculateWallPenalty(wallsGrid, ghostGaussian))
             else:
                 gaussians.append(self.gaussian(self.chromoawesome[4], self.chromoawesome[5], ghost.getPosition()[0], ghost.getPosition()[1]))
                 
         for hunter in hunters:
-            gaussians.append(self.gaussian(self.chromoawesome[6], self.chromoawesome[7], hunter.getPosition()[0], hunter.getPosition()[1]))
+            # only care about spread if I have more than two choices, not in a corridor
+            if len(possibleCells) > 2:
+                gaussians.append(self.gaussian(self.chromoawesome[6], self.chromoawesome[7], hunter.getPosition()[0], hunter.getPosition()[1]))
               
+        # new, spread ghosts while walking to offense, uses the same chromosome as the defensive spread
+        for defender in defenders:
+            # only care about spread if I have more than two choices, not in a corridor
+            if len(possibleCells) > 2:
+                gaussians.append(self.gaussian(self.chromoawesome[18], self.chromoawesome[19], defender.getPosition()[0], defender.getPosition()[1]))
+            
         return gaussians
     
     def calculateWallPenalty(self, wallsGrid, ghostGaussian):
@@ -195,10 +209,7 @@ class DoubleAgent(CaptureAgent):
             
         return getWallPenaltyForCell
     
-    def generateDefenseGaussians(self, amScared, defenseFoodList, defenseCapsules, defenders, invaders):
-        # def cellEvaluation(coordinates):
-        #    return coordinates[0] + coordinates[1]
-      
+    def generateDefenseGaussians(self, amScared, defenseFoodList, defenseCapsules, defenders, invaders, ghosts, possibleCells):
         gaussians = []
       
         for food in defenseFoodList:
@@ -208,13 +219,15 @@ class DoubleAgent(CaptureAgent):
             gaussians.append(self.gaussian(self.chromoawesome[20], self.chromoawesome[21], capsule[0], capsule[1]))
       
         for invader in invaders:
-            if amScared:
+             if amScared:
                 gaussians.append(self.gaussian(self.chromoawesome[14], self.chromoawesome[15], invader.getPosition()[0], invader.getPosition()[1]))
-            else:
+             else:
                 gaussians.append(self.gaussian(self.chromoawesome[16], self.chromoawesome[17], invader.getPosition()[0], invader.getPosition()[1]))
                 
         for defender in defenders:
-            gaussians.append(self.gaussian(self.chromoawesome[18], self.chromoawesome[19], defender.getPosition()[0], defender.getPosition()[1]))
+            # only care about spread if I have more than two choices, not in a corridor
+            if len(possibleCells) > 2:
+                gaussians.append(self.gaussian(self.chromoawesome[18], self.chromoawesome[19], defender.getPosition()[0], defender.getPosition()[1]))
               
         return gaussians
     
