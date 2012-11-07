@@ -14,7 +14,7 @@ POPULATION_SIZE = 30
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "officeCapture", "-Q", "-n", "3"]
+    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "captureCorners", "-Q", "-n", "3"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
     
