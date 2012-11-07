@@ -35,7 +35,9 @@ def eval_func(chromosome):
 #        scores.append(foodEaten[i] - (foodLost[i] * 10) + (killBalance / 10.0))
     
     scores = [game.state.data.score for game in games]
-    avgScore = float(sum(scores)) / len(scores)
+    
+    minScore = min(scores)
+    # avgScore = float(sum(scores)) / len(scores)
     
 #    print "Chromosome: ",
 #    print chromosome.genomeList,
@@ -43,7 +45,9 @@ def eval_func(chromosome):
 #    print " got a score of: ",
 #    print avgScore
     
-    return avgScore
+    # return avgScore
+    return minScore
+    
     # nWins = [s>0 for s in scores].count(True);
 
     # return nWins;
@@ -69,7 +73,7 @@ def train():
     
     print "Evolution started"  # this is should be saved in yourlogfilename.txt
 
-    n_generatios = 60
+    n_generatios = 20
     
     # Creates the genome
     genome = PacmanGaussianGenome.PacmanGaussiansList()
