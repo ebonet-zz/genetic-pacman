@@ -14,7 +14,7 @@ POPULATION_SIZE = 30
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "captureCorners", "-Q", "-n", "3"]
+    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "jumboCapture", "-Q", "-n", "3"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
     
@@ -37,7 +37,7 @@ def eval_func(chromosome):
     scores = [game.state.data.score for game in games]
     
     minScore = min(scores)
-    # avgScore = float(sum(scores)) / len(scores)
+    avgScore = float(sum(scores)) / len(scores)
     
 #    print "Chromosome: ",
 #    print chromosome.genomeList,
@@ -45,8 +45,8 @@ def eval_func(chromosome):
 #    print " got a score of: ",
 #    print avgScore
     
-    # return avgScore
-    return minScore
+    return avgScore
+    # return minScore
     
     # nWins = [s>0 for s in scores].count(True);
 
