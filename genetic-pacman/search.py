@@ -12,6 +12,8 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from game import Directions
+from game import Actions
 
 class SearchProblem:
   """
@@ -55,60 +57,191 @@ class SearchProblem:
      be composed of legal moves
      """
      util.raiseNotDefined()
-           
 
-def tinyMazeSearch(problem):
-  """
-  Returns a sequence of moves that solves tinyMaze.  For any other
-  maze, the sequence of moves will be incorrect, so only use this for tinyMaze
-  """
-  from game import Directions
-  s = Directions.SOUTH
-  w = Directions.WEST
-  return  [s,s,w,s,w,w,s,w]
+def uniformCostFunction(node):
+    return node[2];
 
-def depthFirstSearch(problem):
-  """
-  Search the deepest nodes in the search tree first [p 85].
-  
-  Your search algorithm needs to return a list of actions that reaches
-  the goal.  Make sure to implement a graph search algorithm [Fig. 3.7].
-  
-  To get started, you might want to try some of these simple commands to
-  understand the search problem that is being passed in:
-  
-  print "Start:", problem.getStartState()
-  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  print "Start's successors:", problem.getSuccessors(problem.getStartState())
-  """
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+def aStarFunction(heuristic, problem):
+  def fn(node):
+    return uniformCostFunction(node) + heuristic(node[0], problem)
+  return fn
 
-def breadthFirstSearch(problem):
-  "Search the shallowest nodes in the search tree first. [p 81]"
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
-      
-def uniformCostSearch(problem):
-  "Search the node of least total cost first. "
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
-
-def nullHeuristic(state, problem=None):
-  """
-  A heuristic function estimates the cost from the current state to the nearest
-  goal in the provided SearchProblem.  This heuristic is trivial.
-  """
-  return 0
-
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic):
   "Search the node that has the lowest combined cost and heuristic first."
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
-    
+  return search(problem, util.PriorityQueueWithFunction(aStarFunction(heuristic, problem)))
+
+class PositionSearchProblem(SearchProblem):
+  """
+  A search problem defines the state space, start state, goal test,
+  successor function and cost function.  This search problem can be 
+  used to find paths to a particular point on the pacman board.
   
-# Abbreviations
-bfs = breadthFirstSearch
-dfs = depthFirstSearch
-astar = aStarSearch
-ucs = uniformCostSearch
+  The state space consists of (x,y) positions in a pacman game.
+  
+  Note: this search problem is fully specified; you should NOT change it.
+  """
+  
+  def __init__(self, gameState, costFn = lambda x: 1, goal=(1,1), start=None, warn=True):
+    """
+    Stores the start and goal.  
+    
+    gameState: A GameState object (pacman.py)
+    costFn: A function from a search state (tuple) to a non-negative number
+    goal: A position in the gameState
+    """
+    self.walls = gameState.getWalls()
+    self.startState = gameState.getPacmanPosition()
+    if start != None: self.startState = start
+    self.goal = goal
+    self.costFn = costFn
+    if warn and (gameState.getNumFood() != 1 or not gameState.hasFood(*goal)):
+      print 'Warning: this does not look like a regular search maze'
+
+    # For display purposes
+    self._visited, self._visitedlist, self._expanded = {}, [], 0
+
+  def getStartState(self):
+    return self.startState
+
+  def isGoalState(self, state):
+     isGoal = state == self.goal 
+     
+     # For display purposes only
+     if isGoal:
+       self._visitedlist.append(state)
+       import __main__
+       if '_display' in dir(__main__):
+         if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
+           __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
+       
+     return isGoal   
+   
+  def getSuccessors(self, state):
+    """
+    Returns successor states, the actions they require, and a cost of 1.
+    
+     As noted in search.py:
+         For a given state, this should return a list of triples, 
+     (successor, action, stepCost), where 'successor' is a 
+     successor to the current state, 'action' is the action
+     required to get there, and 'stepCost' is the incremental 
+     cost of expanding to that successor
+    """
+    
+    successors = []
+    for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+      x,y = state
+      dx, dy = Actions.directionToVector(action)
+      nextx, nexty = int(x + dx), int(y + dy)
+      if not self.walls[nextx][nexty]:
+        nextState = (nextx, nexty)
+        cost = self.costFn(nextState)
+        successors.append( ( nextState, action, cost) )
+        
+    # Bookkeeping for display purposes
+    self._expanded += 1 
+    if state not in self._visited:
+      self._visited[state] = True
+      self._visitedlist.append(state)
+      
+    return successors
+
+  def getCostOfActions(self, actions):
+    """
+    Returns the cost of a particular sequence of actions.  If those actions
+    include an illegal move, return 999999
+    """
+    if actions == None: return 999999
+    x,y= self.getStartState()
+    cost = 0
+    for action in actions:
+      # Check figure out the next state and see whether its' legal
+      dx, dy = Actions.directionToVector(action)
+      x, y = int(x + dx), int(y + dy)
+      if self.walls[x][y]: return 999999
+      cost += self.costFn((x,y))
+    return cost
+
+class AnyFoodSearchProblem(PositionSearchProblem):
+  """
+    A search problem for finding a path to any food.
+    
+    This search problem is just like the PositionSearchProblem, but
+    has a different goal test, which you need to fill in below.  The
+    state space and successor function do not need to be changed.
+    
+    The class definition above, AnyFoodSearchProblem(PositionSearchProblem),
+    inherits the methods of the PositionSearchProblem.
+    
+    You can use this search problem to help you fill in 
+    the findPathToClosestDot method.
+  """
+
+  def __init__(self, gameState, agentIndex, food):
+    "Stores information from the gameState.  You don't need to change this."
+    # Store the food for later reference
+    self.food = food
+
+    # Store info for the PositionSearchProblem (no need to change this)
+    self.walls = gameState.getWalls()
+    self.startState = gameState.getAgentPosition(agentIndex)
+    self.costFn = lambda x: 1
+    self._visited, self._visitedlist, self._expanded = {}, [], 0
+    
+  def isGoalState(self, state):
+    """
+    The state is Pacman's position. Fill this in with a goal test
+    that will complete the problem definition.
+    """
+    if state in self.food:
+      return True
+    return False
+
+
+def findPathToClosestDot(gameState, agentIndex, food):
+    "Returns a path (a list of actions) to the closest dot, starting from gameState"
+    # Here are some useful elements of the startState
+
+    problem = AnyFoodSearchProblem(gameState, agentIndex, food)
+
+    def heuristic(pos, prob):
+      return min(util.manhattanDistance(pos, y) for y in prob.food)
+
+    return aStarSearch(problem, heuristic) 
+
+
+def search(problem, dataStructure):
+  visitedStates = []
+  queuedStates = []
+  stateMap = {}
+  dataStructure.push([problem.getStartState(), None, 0, None])
+  
+  while not dataStructure.isEmpty():
+    currentNode = dataStructure.pop()
+    
+    currentState = currentNode[0]
+    previousDirection = currentNode[1]
+    currentCost = currentNode[2]
+    previousState = currentNode[3]
+    
+    visitedStates.append(currentState)
+    stateMap[currentState] = [previousState, previousDirection]
+    
+    if(problem.isGoalState(currentState)):
+      path = []
+      while currentState is not None:
+        previousState = stateMap[currentState]
+        if previousState[0] is not None:
+          path.insert(0,previousState[1])
+        currentState = previousState[0]
+      return path
+    
+    for nextNode in problem.getSuccessors(currentState):
+      nextState = nextNode[0]
+    
+      if nextState in visitedStates or nextState in queuedStates:
+        continue
+      else:
+        queuedStates.append(nextState)
+        nextNode = [nextNode[0], nextNode[1], currentCost + nextNode[2], currentState]
+        dataStructure.push(nextNode)
