@@ -14,7 +14,7 @@ POPULATION_SIZE = 30
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "captureTheFlag", "-Q", "-n", "7"]
+    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "officeCapture", "-Q", "-n", "3"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
     
@@ -24,18 +24,17 @@ def eval_func(chromosome):
     # scores = [game.state.data.score + 100.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     # scores = [50.0 * exp(-len(game.state.getBlueFood().asList()) + 2) for game in games];
     
-    foodEaten = [4 - len(game.state.getBlueFood().asList()) for game in games]
-    foodLost = [4 - len(game.state.getRedFood().asList()) for game in games]
-    pacmanKills = []
+#    foodEaten = [4 - len(game.state.getBlueFood().asList()) for game in games]
+#    foodLost = [4 - len(game.state.getRedFood().asList()) for game in games]
+#    pacmanKills = []
+#    scores = []
+#    for i in range(len(games)):
+#        killBalance = (games[i].state.data.score - (foodEaten[i] - foodLost[i]))
+#        pacmanKills.append(killBalance)
+#       # scores.append(foodEaten[i] - foodLost[i] + killBalance)
+#        scores.append(foodEaten[i] - (foodLost[i] * 10) + (killBalance / 10.0))
     
-    scores = []
-    for i in range(len(games)):
-        killBalance = (games[i].state.data.score - (foodEaten[i] - foodLost[i]))
-        pacmanKills.append(killBalance)
-       # scores.append(foodEaten[i] - foodLost[i] + killBalance)
-        scores.append(foodEaten[i] - (foodLost[i] * 10) + (killBalance / 10.0))
-    
-    # scores = [game.state.data.score for game in games]
+    scores = [game.state.data.score for game in games]
     avgScore = float(sum(scores)) / len(scores)
     
 #    print "Chromosome: ",
