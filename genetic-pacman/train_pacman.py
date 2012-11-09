@@ -14,7 +14,7 @@ POPULATION_SIZE = 30
 
 def eval_func(chromosome):
     # arguments for the pacman game
-    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "jumboCapture", "-Q", "-n", "3"]
+    argv = ["-r", "myTeam", "-b", "baselineTeam", "-l", "RANDOM107", "-Q", "-n", "3"]
     options = readCommand(argv)  # Get game components based on input
     options["chromosome"] = chromosome.genomeList
     
@@ -73,7 +73,7 @@ def train():
     
     print "Evolution started"  # this is should be saved in yourlogfilename.txt
 
-    n_generatios = 20
+    n_generatios = 40
     
     # Creates the genome
     genome = PacmanGaussianGenome.PacmanGaussiansList()
